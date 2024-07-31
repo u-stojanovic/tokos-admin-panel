@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+model User {
+  email     String    @unique
+  firstName String
+  lastName  String
+  role      UserRoles @default(None)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  id        Int       @id @default(autoincrement())
+
+  @@unique([id, email])
+}
+
+model Product {
+  id          Int                 @id @default(autoincrement())
+  name        String
+  description String
+  categoryId  Int
+  price       Int?
+  images      Image[]
+  category    Category            @relation(fields: [categoryId], references: [id])
+  ingredients ProductIngredient[]
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String
+  products Product[]
+}
+
+model Ingredient {
+  id        Int                 @id @default(autoincrement())
+  name      String
+  isAlergen Boolean
+  products  ProductIngredient[]
+}
+
+model ProductIngredient {
+  productId    Int
+  ingredientId Int
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  product      Product    @relation(fields: [productId], references: [id])
+
+  @@id([productId, ingredientId])
+}
+
+model Image {
+  id        Int     @id @default(autoincrement())
+  imageUrl  String
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+enum UserRoles {
+  HeadAdmin
+  Worker
+  None
+}
