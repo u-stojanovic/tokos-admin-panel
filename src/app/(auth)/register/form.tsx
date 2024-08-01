@@ -45,27 +45,35 @@ export default function RegisterForm() {
   });
 
   const onSubmit: SubmitHandler<RegisterFormInputs> = async (data) => {
-    const response = await fetch(`/api/auth/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (response.ok) {
-      console.log("User registered successfully");
-      toast({
-        title: "User registered successfully",
-        description: "Your account is registered in our database",
+    try {
+      const response = await fetch(`/api/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
-    } else {
-      console.error("Failed to register user");
-      const errorData = await response.json();
+
+      const result = await response.json();
+
+      if (response.ok) {
+        toast({
+          title: "User registered successfully",
+          description: result.message,
+        });
+        redirect("/");
+      } else {
+        toast({
+          title: "Error",
+          description: result.message || "An error occurred",
+        });
+      }
+    } catch (error) {
       toast({
         title: "Error",
-        description: errorData.message,
+        description: "An unexpected error occurred. Please try again.",
       });
+      console.error("An unexpected error occurred:", error);
     }
   };
 
@@ -73,7 +81,7 @@ export default function RegisterForm() {
     <section className="mx-auto flex flex-col justify-center items-center content-center mt-10">
       <Card className="w-full max-w-3xl">
         <CardHeader>
-          <CardTitle className="text-3xl">Create your account</CardTitle>
+          <CardTitle className="text-3xl">Create account</CardTitle>
           <CardDescription>
             Already have an account?{" "}
             <Link href="/login" className="underline" prefetch={false}>

@@ -23,11 +23,13 @@ export default async function RegisterPage() {
     });
 
     if (!user || user.role !== UserRoles.HeadAdmin) {
-      return redirect("/login");
+      return <RegisterForm />;
+      // return redirect("/login");
     }
 
     return <RegisterForm />;
   }
 
-  return redirect("/login");
+  return <RegisterForm />;
+  // return redirect("/login");
 }

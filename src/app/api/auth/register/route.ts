@@ -2,29 +2,58 @@ import { NextResponse } from "next/server";
 import { hash } from "bcrypt";
 import prisma from "../../../../../prisma/client";
 import { z } from "zod";
+import nodemailer from "nodemailer";
+import crypto from "crypto";
+
+// Generate a verification token
+function generateVerificationToken() {
+  return crypto.randomBytes(32).toString("hex");
+}
 
 const registerSchema = z.object({
-  name: z
-    .string()
-    .min(2, "Name is required and must be at least 2 characters long"),
-  lastname: z
-    .string()
-    .min(2, "Last name is required and must be at least 2 characters long"),
-  email: z.string().email({ message: "Invalid email address" }),
-  username: z
-    .string()
-    .min(3, "Username is required and must be at least 3 characters long"),
-  password: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters long" }),
+  name: z.string().min(2, "Name must be at least 2 characters long"),
+  lastname: z.string().min(2, "Last name must be at least 2 characters long"),
+  email: z.string().email("Invalid email address"),
+  username: z.string().min(3, "Username must be at least 3 characters long"),
+  password: z.string().min(6, "Password must be at least 6 characters long"),
 });
+
+// Function to send a verification email
+async function sendVerificationEmail(
+  email: string,
+  name: string,
+  token: string,
+) {
+  const baseUrl =
+    process.env.NODE_ENV === "production"
+      ? process.env.NEXT_PUBLIC_APP_URL_PROD
+      : process.env.NEXT_PUBLIC_APP_URL_DEV;
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USERNAME,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+
+  const verificationLink = `${baseUrl}/verify-email?token=${token}`;
+
+  const mailOptions = {
+    from: process.env.EMAIL_USERNAME,
+    to: email,
+    subject: "Verify Your Email",
+    text: `Hello ${name},\n\nPlease verify your email by clicking the link: ${verificationLink}`,
+  };
+
+  await transporter.sendMail(mailOptions);
+}
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
 
     const result = registerSchema.safeParse(body);
-
     if (!result.success) {
       return NextResponse.json(
         { message: "Validation error", errors: result.error.errors },
@@ -34,10 +63,7 @@ export async function POST(request: Request) {
 
     const { name, lastname, email, username, password } = result.data;
 
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-
+    const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return NextResponse.json(
         { message: "User already exists" },
@@ -46,6 +72,7 @@ export async function POST(request: Request) {
     }
 
     const hashedPassword = await hash(password, 10);
+    const verificationToken = generateVerificationToken();
 
     const newUser = await prisma.user.create({
       data: {
@@ -54,11 +81,25 @@ export async function POST(request: Request) {
         email,
         username,
         password: hashedPassword,
+        isActive: false,
+        verificationToken: {
+          create: {
+            token: verificationToken,
+            expiresAt: new Date(Date.now() + 3600 * 1000),
+          },
+        },
       },
     });
 
+    await sendVerificationEmail(
+      newUser.email,
+      newUser.firstName,
+      verificationToken,
+    );
+
     return NextResponse.json({
-      message: "User created successfully",
+      message:
+        "User created successfully. Please check your email to verify your account.",
       user: {
         id: newUser.id,
         email: newUser.email,

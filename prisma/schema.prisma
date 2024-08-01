@@ -15,15 +15,26 @@ enum UserRoles {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
-  password  String
-  username  String    @unique
-  firstName String
-  lastName  String
-  role      UserRoles @default(None)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id                Int                 @id @default(autoincrement())
+  email             String              @unique
+  password          String
+  username          String              @unique
+  firstName         String
+  lastName          String
+  role              UserRoles           @default(None)
+  isActive          Boolean             @default(false)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  verificationToken VerificationToken[]
+}
+
+model VerificationToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
 }
 
 model Product {
