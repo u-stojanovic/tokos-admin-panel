@@ -50,7 +50,6 @@ export default function LoginForm() {
         title: "User successfully logged in",
         description: "You are now authenticated",
       });
-      redirect("/");
     }
   };
 

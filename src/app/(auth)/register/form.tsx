@@ -59,7 +59,6 @@ export default function RegisterForm() {
         title: "User registered successfully",
         description: "Your account is registered in our database",
       });
-      redirect("/");
     } else {
       console.error("Failed to register user");
       const errorData = await response.json();
@@ -77,7 +76,7 @@ export default function RegisterForm() {
           <CardTitle className="text-3xl">Create your account</CardTitle>
           <CardDescription>
             Already have an account?{" "}
-            <Link href="/auth/login" className="underline" prefetch={false}>
+            <Link href="/login" className="underline" prefetch={false}>
               Login
             </Link>
           </CardDescription>
