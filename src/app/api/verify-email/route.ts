@@ -11,7 +11,6 @@ export async function GET(request: Request) {
   }
 
   try {
-    // Fetch the verification token from the database
     const verification = await prisma.verificationToken.findUnique({
       where: { token },
       include: { user: true },
@@ -31,13 +30,11 @@ export async function GET(request: Request) {
       );
     }
 
-    // Update user to set isActive to true
     await prisma.user.update({
       where: { id: verification.userId },
       data: { isActive: true },
     });
 
-    // Delete the verification token
     await prisma.verificationToken.delete({ where: { token } });
 
     return NextResponse.json({ message: "Account verified successfully" });
