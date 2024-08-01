@@ -8,16 +8,22 @@ datasource db {
   directUrl = env("DIRECT_DATABASE_URL")
 }
 
+enum UserRoles {
+  HeadAdmin
+  Worker
+  None
+}
+
 model User {
+  id        Int       @id @default(autoincrement())
   email     String    @unique
+  password  String
+  username  String    @unique
   firstName String
   lastName  String
   role      UserRoles @default(None)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  id        Int       @id @default(autoincrement())
-  password  String
-  username  String    @unique
 }
 
 model Product {
@@ -58,10 +64,4 @@ model Image {
   imageUrl  String
   productId Int
   product   Product @relation(fields: [productId], references: [id])
-}
-
-enum UserRoles {
-  HeadAdmin
-  Worker
-  None
 }

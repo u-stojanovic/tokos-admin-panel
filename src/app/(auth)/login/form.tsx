@@ -1,5 +1,6 @@
 "use client";
 import { redirect } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -18,7 +19,7 @@ import { useToast } from "@/components/ui/use-toast";
 const { toast } = useToast();
 
 const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  identifier: z.string().min(1, "Email or username is required"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
 });
 
@@ -34,28 +35,23 @@ export default function LoginForm() {
   });
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
-    const response = await fetch(`/api/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
+    const result = await signIn("credentials", {
+      redirect: false,
+      identifier: data.identifier,
+      password: data.password,
     });
 
-    if (response.ok) {
-      console.log("Logged in successfully");
+    if (result?.error) {
       toast({
-        title: "You are now authenticated",
-        description: "Logged in successfully",
+        title: "Error has occured",
+        description: result.error,
+      });
+    } else {
+      toast({
+        title: "User successfully logged in",
+        description: "You are now authenticated",
       });
       redirect("/");
-    } else {
-      console.error("Failed to authenticate user");
-      const errorData = await response.json();
-      toast({
-        title: "Error",
-        description: errorData.message,
-      });
     }
   };
 
@@ -65,21 +61,22 @@ export default function LoginForm() {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">Login</CardTitle>
           <CardDescription>
-            Email ili Username i šifra da bi ste bili ulogovani
+            Enter your email or username and password to log in
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="identifier">Email or Username</Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="email ili username"
-                {...register("email")}
+                id="identifier"
+                placeholder="email or username"
+                {...register("identifier")}
               />
-              {errors.email && (
-                <span className="text-red-600">{errors.email.message}</span>
+              {errors.identifier && (
+                <span className="text-red-600">
+                  {errors.identifier.message}
+                </span>
               )}
             </div>
             <div className="space-y-2">
