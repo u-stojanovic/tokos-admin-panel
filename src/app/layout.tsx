@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Toaster } from "@/components/ui/toaster";
 import Sidebar from "@/components/Sidebar";
 import "./globals.css";
 
@@ -22,6 +23,7 @@ export default function RootLayout({
           {/* <Sidebar /> */}
           <div className="flex-1">{children}</div>
         </div>
+        <Toaster />
       </body>
     </html>
   );

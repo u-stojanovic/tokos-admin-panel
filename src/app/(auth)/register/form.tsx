@@ -1,6 +1,8 @@
 "use client";
+import { redirect } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { z } from "zod";
 import {
   Card,
@@ -9,21 +11,18 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+
+const { toast } = useToast();
 
 const registerSchema = z
   .object({
-    name: z.string().min(2, "Name is required at least 2 characters long"),
-    lastname: z
-      .string()
-      .min(2, "Username is required at least 2 characters long"),
-
-    username: z
-      .string()
-      .min(3, "Username is required at least 3 characters long"),
+    name: z.string().min(2, "Name must be at least 2 characters long"),
+    lastname: z.string().min(2, "Lastname must be at least 2 characters long"),
+    username: z.string().min(3, "Username must be at least 3 characters long"),
     email: z.string().email("Invalid email address"),
     password: z.string().min(6, "Password must be at least 6 characters long"),
     confirmPassword: z
@@ -37,7 +36,7 @@ const registerSchema = z
 
 type RegisterFormInputs = z.infer<typeof registerSchema>;
 
-export default function Form() {
+export default function RegisterForm() {
   const {
     register,
     handleSubmit,
@@ -47,7 +46,29 @@ export default function Form() {
   });
 
   const onSubmit: SubmitHandler<RegisterFormInputs> = async (data) => {
-    console.log("Form data is valid", data);
+    const response = await fetch(`/api/auth/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (response.ok) {
+      console.log("User registered successfully");
+      toast({
+        title: "User registered successfully",
+        description: "Your account is registered in our database",
+      });
+      redirect("/");
+    } else {
+      console.error("Failed to register user");
+      const errorData = await response.json();
+      toast({
+        title: "Error",
+        description: errorData.message,
+      });
+    }
   };
 
   return (
@@ -68,29 +89,29 @@ export default function Form() {
               <Label htmlFor="name">Name</Label>
               <Input
                 id="name"
-                placeholder="Unesite vaše ime"
+                placeholder="Enter your name"
                 {...register("name")}
               />
-              {errors.username && (
-                <span className="text-red-600">{errors.username.message}</span>
+              {errors.name && (
+                <span className="text-red-600">{errors.name.message}</span>
               )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="lastname">Lastname</Label>
               <Input
                 id="lastname"
-                placeholder="Unesite vaše prezime"
+                placeholder="Enter your lastname"
                 {...register("lastname")}
               />
-              {errors.username && (
-                <span className="text-red-600">{errors.username.message}</span>
+              {errors.lastname && (
+                <span className="text-red-600">{errors.lastname.message}</span>
               )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="username">Username</Label>
               <Input
                 id="username"
-                placeholder="Unesite vaš username"
+                placeholder="Enter your username"
                 {...register("username")}
               />
               {errors.username && (
@@ -101,7 +122,7 @@ export default function Form() {
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
-                placeholder="Unesite vaš email"
+                placeholder="Enter your email"
                 type="email"
                 {...register("email")}
               />
@@ -113,7 +134,7 @@ export default function Form() {
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
-                placeholder="Unesite vašu šifru"
+                placeholder="Enter your password"
                 type="password"
                 {...register("password")}
               />
@@ -125,7 +146,7 @@ export default function Form() {
               <Label htmlFor="confirmPassword">Confirm Password</Label>
               <Input
                 id="confirmPassword"
-                placeholder="Potvrdite prethodno unešenu šifru"
+                placeholder="Confirm your password"
                 type="password"
                 {...register("confirmPassword")}
               />

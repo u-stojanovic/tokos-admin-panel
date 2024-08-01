@@ -1,4 +1,5 @@
 "use client";
+import { redirect } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -12,6 +13,9 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+
+const { toast } = useToast();
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -20,7 +24,7 @@ const loginSchema = z.object({
 
 type LoginFormInputs = z.infer<typeof loginSchema>;
 
-export default function Form() {
+export default function LoginForm() {
   const {
     register,
     handleSubmit,
@@ -30,7 +34,29 @@ export default function Form() {
   });
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
-    console.log("Form data is valid", data);
+    const response = await fetch(`/api/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (response.ok) {
+      console.log("Logged in successfully");
+      toast({
+        title: "You are now authenticated",
+        description: "Logged in successfully",
+      });
+      redirect("/");
+    } else {
+      console.error("Failed to authenticate user");
+      const errorData = await response.json();
+      toast({
+        title: "Error",
+        description: errorData.message,
+      });
+    }
   };
 
   return (
