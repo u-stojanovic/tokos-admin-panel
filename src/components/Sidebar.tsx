@@ -10,14 +10,14 @@ import {
 import { MdOutlineBorderColor } from "react-icons/md";
 import { FaDropbox } from "react-icons/fa";
 import Link from "next/link";
-import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { usePathname } from "next/navigation";
-import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import Image from "next/image";
+
+// NOTE: Add user, isAuthenticated and isLoading
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { user, isAuthenticated, isLoading } = useKindeBrowserClient();
+  // const { user, isAuthenticated, isLoading } = useKindeBrowserClient();
 
   const isActive = (path: string) =>
     pathname === path

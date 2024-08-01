@@ -16,8 +16,8 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   id        Int       @id @default(autoincrement())
-
-  @@unique([id, email])
+  password  String
+  username  String    @unique
 }
 
 model Product {
