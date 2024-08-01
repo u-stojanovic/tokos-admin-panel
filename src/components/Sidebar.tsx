@@ -94,38 +94,38 @@ export default function Sidebar() {
           </span>
         </Link>
       </nav>
-      <div className="flex flex-col items-center p-4 border-t border-gray-800 dark:border-gray-800 w-full transition-all">
-        {isLoading && !(pathname === "/") && (
-          <div className="animate-spin rounded-full h-7 w-7 mx-auto my-2 border-b-2 border-gray-700 dark:border-white/50"></div>
-        )}
-        {user?.picture && (
-          <Image
-            src={user.picture}
-            alt="Profile picture"
-            className="rounded-full"
-            loading="lazy"
-            width={50}
-            height={50}
-          />
-        )}
-        {user && !user.picture && (
-          <div className="h-7 w-7 rounded-full mx-auto my-2 bg-gray-800 text-white text-xs flex justify-center items-center">
-            {user?.given_name?.[0]}
-          </div>
-        )}
-        {user?.email && (
-          <p className="group-hover:block hidden text-center text-white text-xs mb-3 transition-opacity delay-300 duration-500">
-            Logged in as {user.email}
-          </p>
-        )}
-        {isAuthenticated && (
-          <LogoutLink>
-            <span className="group-hover:block text-red-500 font-bold hidden transition-opacity delay-300 duration-500">
-              Log out
-            </span>
-          </LogoutLink>
-        )}
-      </div>
+      {/* <div className="flex flex-col items-center p-4 border-t border-gray-800 dark:border-gray-800 w-full transition-all"> */}
+      {/*   {isLoading && !(pathname === "/") && ( */}
+      {/*     <div className="animate-spin rounded-full h-7 w-7 mx-auto my-2 border-b-2 border-gray-700 dark:border-white/50"></div> */}
+      {/*   )} */}
+      {/*   {user?.picture && ( */}
+      {/*     <Image */}
+      {/*       src={user.picture} */}
+      {/*       alt="Profile picture" */}
+      {/*       className="rounded-full" */}
+      {/*       loading="lazy" */}
+      {/*       width={50} */}
+      {/*       height={50} */}
+      {/*     /> */}
+      {/*   )} */}
+      {/*   {user && !user.picture && ( */}
+      {/*     <div className="h-7 w-7 rounded-full mx-auto my-2 bg-gray-800 text-white text-xs flex justify-center items-center"> */}
+      {/*       {user?.given_name?.[0]} */}
+      {/*     </div> */}
+      {/*   )} */}
+      {/*   {user?.email && ( */}
+      {/*     <p className="group-hover:block hidden text-center text-white text-xs mb-3 transition-opacity delay-300 duration-500"> */}
+      {/*       Logged in as {user.email} */}
+      {/*     </p> */}
+      {/*   )} */}
+      {/*   {isAuthenticated && ( */}
+      {/*     <LogoutLink> */}
+      {/*       <span className="group-hover:block text-red-500 font-bold hidden transition-opacity delay-300 duration-500"> */}
+      {/*         Log out */}
+      {/*       </span> */}
+      {/*     </LogoutLink> */}
+      {/*   )} */}
+      {/* </div> */}
     </aside>
   );
 }
