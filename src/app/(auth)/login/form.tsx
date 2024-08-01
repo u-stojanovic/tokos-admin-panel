@@ -16,8 +16,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 
-const { toast } = useToast();
-
 const loginSchema = z.object({
   identifier: z.string().min(1, "Email or username is required"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
@@ -26,6 +24,7 @@ const loginSchema = z.object({
 type LoginFormInputs = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
+  const { toast } = useToast();
   const {
     register,
     handleSubmit,

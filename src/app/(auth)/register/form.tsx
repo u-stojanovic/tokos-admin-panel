@@ -16,8 +16,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 
-const { toast } = useToast();
-
 const registerSchema = z
   .object({
     name: z.string().min(2, "Name must be at least 2 characters long"),
@@ -37,6 +35,7 @@ const registerSchema = z
 type RegisterFormInputs = z.infer<typeof registerSchema>;
 
 export default function RegisterForm() {
+  const { toast } = useToast();
   const {
     register,
     handleSubmit,
