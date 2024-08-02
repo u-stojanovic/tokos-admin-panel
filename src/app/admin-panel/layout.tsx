@@ -1,7 +1,7 @@
-import WorkerSidebar from "@/components/workers/Sidebar";
 import { getUserAndRole } from "@/lib/auth/authUtils";
 import { redirect } from "next/navigation";
 import { UserRoles } from "@prisma/client";
+import AdminSidebar from "@/components/admin/Sidebar";
 
 export default async function AdminLayout({
   children,
@@ -12,6 +12,8 @@ export default async function AdminLayout({
 
   if (!user) return redirect("/login");
 
+  if (user && !user.isActive) return redirect("/failed-verification");
+
   if (redirectPath) {
     return redirect(redirectPath);
   }
@@ -20,7 +22,7 @@ export default async function AdminLayout({
     case UserRoles.HeadAdmin:
       return (
         <div className="flex h-screen bg-gray-100 dark:bg-gray-800">
-          <WorkerSidebar />
+          <AdminSidebar user={user} />
           <div className="flex-1 p-8">{children}</div>
         </div>
       );

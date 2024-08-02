@@ -1,27 +1,23 @@
 "use client";
-import {
-  Grid3x3Icon,
-  HomeIcon,
-  SettingsIcon,
-  BarChartIcon,
-  HistoryIcon,
-  Bell,
-} from "lucide-react";
+import { HomeIcon, SettingsIcon, HistoryIcon, Bell } from "lucide-react";
 import { MdOutlineBorderColor } from "react-icons/md";
 import { FaDropbox } from "react-icons/fa";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import { signOut } from "next-auth/react";
+import { Button } from "../ui/button";
+import { UserInformation } from "@/lib";
 
-// NOTE: Add user, isAuthenticated and isLoading
+interface AdminSidebarProps {
+  user: UserInformation;
+}
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ user }: AdminSidebarProps) {
   const pathname = usePathname();
-  console.log("pathname: ", pathname);
-  // const { user, isAuthenticated, isLoading } = useKindeBrowserClient();
 
   const isActive = (path: string) =>
-    pathname.startsWith(path)
+    pathname === path
       ? "bg-gray-800 text-white"
       : "text-gray-400 hover:bg-gray-800 hover:text-white";
 
@@ -39,8 +35,8 @@ export default function AdminSidebar() {
       </Link>
       <nav className="flex flex-1 flex-col items-start justify-start gap-2 overflow-auto p-4">
         <Link
-          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/dashboard")}`}
-          href="/dashboard"
+          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/admin-panel/dashboard")}`}
+          href="/admin-panel/dashboard"
         >
           <HomeIcon className="h-5 w-5" />
           <span className="group-hover:block hidden transition-opacity delay-300 duration-500">
@@ -48,8 +44,8 @@ export default function AdminSidebar() {
           </span>
         </Link>
         <Link
-          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/porudzbine")}`}
-          href="/porudzbine"
+          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/admin-panel/porudzbine")}`}
+          href="/admin-panel/porudzbine"
         >
           <MdOutlineBorderColor className="h-5 w-5" />
           <span className="group-hover:block hidden transition-opacity delay-300 duration-500">
@@ -57,8 +53,8 @@ export default function AdminSidebar() {
           </span>
         </Link>
         <Link
-          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/proizvodi")}`}
-          href="/proizvodi"
+          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/admin-panel/proizvodi")}`}
+          href="/admin-panel/proizvodi"
         >
           <FaDropbox className="h-5 w-5" />
           <span className="group-hover:block hidden transition-opacity delay-300 duration-500">
@@ -67,8 +63,8 @@ export default function AdminSidebar() {
         </Link>
 
         <Link
-          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/istorija")}`}
-          href="/istorija"
+          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/admin-panel/istorija")}`}
+          href="/admin-panel/istorija"
         >
           <HistoryIcon className="h-5 w-5" />
           <span className="group-hover:block hidden transition-opacity delay-300 duration-500">
@@ -77,8 +73,8 @@ export default function AdminSidebar() {
         </Link>
 
         <Link
-          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/podesavanja")}`}
-          href="/podesavanja"
+          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/admin-panel/podesavanja")}`}
+          href="/admin-panel/podesavanja"
         >
           <SettingsIcon className="h-5 w-5" />
           <span className="group-hover:block hidden transition-opacity delay-300 duration-500">
@@ -86,8 +82,8 @@ export default function AdminSidebar() {
           </span>
         </Link>
         <Link
-          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/notifikacije")}`}
-          href="/notifikacije"
+          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/admin-panel/notifikacije")}`}
+          href="/admin-panel/notifikacije"
         >
           <Bell className="h-5 w-5" />
           <span className="group-hover:block hidden transition-opacity delay-300 duration-500">
@@ -95,38 +91,19 @@ export default function AdminSidebar() {
           </span>
         </Link>
       </nav>
-      {/* <div className="flex flex-col items-center p-4 border-t border-gray-800 dark:border-gray-800 w-full transition-all"> */}
-      {/*   {isLoading && !(pathname === "/") && ( */}
-      {/*     <div className="animate-spin rounded-full h-7 w-7 mx-auto my-2 border-b-2 border-gray-700 dark:border-white/50"></div> */}
-      {/*   )} */}
-      {/*   {user?.picture && ( */}
-      {/*     <Image */}
-      {/*       src={user.picture} */}
-      {/*       alt="Profile picture" */}
-      {/*       className="rounded-full" */}
-      {/*       loading="lazy" */}
-      {/*       width={50} */}
-      {/*       height={50} */}
-      {/*     /> */}
-      {/*   )} */}
-      {/*   {user && !user.picture && ( */}
-      {/*     <div className="h-7 w-7 rounded-full mx-auto my-2 bg-gray-800 text-white text-xs flex justify-center items-center"> */}
-      {/*       {user?.given_name?.[0]} */}
-      {/*     </div> */}
-      {/*   )} */}
-      {/*   {user?.email && ( */}
-      {/*     <p className="group-hover:block hidden text-center text-white text-xs mb-3 transition-opacity delay-300 duration-500"> */}
-      {/*       Logged in as {user.email} */}
-      {/*     </p> */}
-      {/*   )} */}
-      {/*   {isAuthenticated && ( */}
-      {/*     <LogoutLink> */}
-      {/*       <span className="group-hover:block text-red-500 font-bold hidden transition-opacity delay-300 duration-500"> */}
-      {/*         Log out */}
-      {/*       </span> */}
-      {/*     </LogoutLink> */}
-      {/*   )} */}
-      {/* </div> */}
+
+      <div className="flex flex-col items-center p-4 border-t border-gray-800 dark:border-gray-800 w-full transition-all">
+        {user?.email && (
+          <p className="group-hover:block hidden text-center text-white text-xs mb-3 transition-opacity delay-300 duration-500">
+            Logged in as {user.email}
+          </p>
+        )}
+        <Button onClick={() => signOut()}>
+          <span className="group-hover:block text-red-500 font-bold hidden transition-opacity delay-300 duration-500">
+            Log out
+          </span>
+        </Button>
+      </div>
     </aside>
   );
 }

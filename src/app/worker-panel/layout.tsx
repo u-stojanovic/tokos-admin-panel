@@ -9,8 +9,8 @@ export default async function WorkerLayout({
   children: React.ReactNode;
 }) {
   const { user, redirectPath } = await getUserAndRole();
-
   if (!user) return redirect("/login");
+  if (user && !user.isActive) return redirect("/failed-verification");
 
   if (redirectPath) {
     return redirect(redirectPath);
@@ -20,7 +20,7 @@ export default async function WorkerLayout({
     case UserRoles.Worker:
       return (
         <div className="flex h-screen bg-gray-100 dark:bg-gray-800">
-          <WorkerSidebar />
+          <WorkerSidebar user={user} />
           <div className="flex-1 p-8">{children}</div>
         </div>
       );

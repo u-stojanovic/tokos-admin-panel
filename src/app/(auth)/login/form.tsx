@@ -37,7 +37,7 @@ export default function LoginForm() {
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     setIsLoading(true);
     const result = await signIn("credentials", {
-      redirect: false,
+      redirect: true,
       identifier: data.identifier,
       password: data.password,
     });

@@ -18,6 +18,7 @@ export async function getUserAndRole() {
       username: true,
       firstName: true,
       lastName: true,
+      isActive: true,
       role: true,
     },
   });
