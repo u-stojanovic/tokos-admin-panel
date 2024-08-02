@@ -1,5 +1,11 @@
 "use client";
-import { HomeIcon, SettingsIcon, HistoryIcon, Bell } from "lucide-react";
+import {
+  HomeIcon,
+  SettingsIcon,
+  HistoryIcon,
+  Bell,
+  UserIcon,
+} from "lucide-react";
 import { MdOutlineBorderColor } from "react-icons/md";
 import { FaDropbox } from "react-icons/fa";
 import Link from "next/link";
@@ -88,6 +94,15 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
           <Bell className="h-5 w-5" />
           <span className="group-hover:block hidden transition-opacity delay-300 duration-500">
             Notifikacije
+          </span>
+        </Link>
+        <Link
+          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/admin-panel/users")}`}
+          href="/admin-panel/users"
+        >
+          <UserIcon className="h-5 w-5" />
+          <span className="group-hover:block hidden transition-opacity delay-300 duration-500">
+            Users
           </span>
         </Link>
       </nav>

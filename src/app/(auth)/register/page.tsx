@@ -1,31 +1,18 @@
-import { getServerSession } from "next-auth";
+import { getUserAndRole } from "@/lib/auth/authUtils";
 import { redirect } from "next/navigation";
-import prisma from "../../../../prisma/client";
 import RegisterForm from "./form";
 import { UserRoles } from "@prisma/client";
 
 export default async function RegisterPage() {
-  const session = await getServerSession();
+  const { user } = await getUserAndRole();
 
-  if (session) {
-    const user = await prisma.user.findUnique({
-      where: {
-        email: session.user?.email as string,
-      },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        firstName: true,
-        lastName: true,
-        role: true,
-      },
-    });
-
-    if (user && user.role === UserRoles.HeadAdmin) {
-      return <RegisterForm />;
-    }
+  if (!user) {
+    return redirect("/login");
   }
 
-  redirect("/login");
+  if (user.role === UserRoles.HeadAdmin) {
+    return <RegisterForm />;
+  }
+
+  return redirect("/login");
 }
