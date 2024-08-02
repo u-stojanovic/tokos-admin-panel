@@ -1,5 +1,5 @@
 "use client";
-import { redirect } from "next/navigation";
+import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -36,6 +36,7 @@ type RegisterFormInputs = z.infer<typeof registerSchema>;
 
 export default function RegisterForm() {
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const {
     register,
     handleSubmit,
@@ -45,6 +46,7 @@ export default function RegisterForm() {
   });
 
   const onSubmit: SubmitHandler<RegisterFormInputs> = async (data) => {
+    setIsLoading(true);
     try {
       const response = await fetch(`/api/auth/register`, {
         method: "POST",
@@ -61,7 +63,6 @@ export default function RegisterForm() {
           title: "User registered successfully",
           description: result.message,
         });
-        redirect("/");
       } else {
         toast({
           title: "Error",
@@ -74,6 +75,8 @@ export default function RegisterForm() {
         description: "An unexpected error occurred. Please try again.",
       });
       console.error("An unexpected error occurred:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -162,8 +165,8 @@ export default function RegisterForm() {
                 </span>
               )}
             </div>
-            <Button type="submit" className="w-full">
-              Register
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Loading..." : "Register"}
             </Button>
           </form>
         </CardContent>

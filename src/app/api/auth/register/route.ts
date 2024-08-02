@@ -37,7 +37,7 @@ async function sendVerificationEmail(
     },
   });
 
-  const verificationLink = `${baseUrl}/verify-email?token=${token}`;
+  const verificationLink = `${baseUrl}/api/verify-email?token=${token}`;
 
   const mailOptions = {
     from: process.env.EMAIL_USERNAME,
@@ -85,7 +85,6 @@ export async function POST(request: Request) {
         verificationToken: {
           create: {
             token: verificationToken,
-            expiresAt: new Date(Date.now() + 3600 * 1000),
           },
         },
       },

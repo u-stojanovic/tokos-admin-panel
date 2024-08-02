@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../../prisma/client";
+import { UserRoles } from "@prisma/client";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -17,27 +18,19 @@ export async function GET(request: Request) {
     });
 
     if (!verification) {
-      return NextResponse.json(
-        { message: "Invalid or expired token" },
-        { status: 400 },
-      );
-    }
-
-    if (verification.expiresAt < new Date()) {
-      return NextResponse.json(
-        { message: "Token has expired" },
-        { status: 400 },
+      return NextResponse.redirect(
+        new URL("/failed-verification", request.url),
       );
     }
 
     await prisma.user.update({
       where: { id: verification.userId },
-      data: { isActive: true },
+      data: { isActive: true, role: UserRoles.Worker },
     });
 
     await prisma.verificationToken.delete({ where: { token } });
 
-    return NextResponse.json({ message: "Account verified successfully" });
+    return NextResponse.redirect(new URL("/success-verification", request.url));
   } catch (e) {
     console.error({ e });
     return NextResponse.json(

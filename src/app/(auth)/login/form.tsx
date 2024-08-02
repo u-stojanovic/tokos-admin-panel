@@ -1,5 +1,4 @@
 "use client";
-import { redirect } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import React from "react";
 
 const loginSchema = z.object({
   identifier: z.string().min(1, "Email or username is required"),
@@ -25,6 +25,7 @@ type LoginFormInputs = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const {
     register,
     handleSubmit,
@@ -34,6 +35,7 @@ export default function LoginForm() {
   });
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
+    setIsLoading(true);
     const result = await signIn("credentials", {
       redirect: false,
       identifier: data.identifier,
@@ -51,6 +53,7 @@ export default function LoginForm() {
         description: "You are now authenticated",
       });
     }
+    setIsLoading(false);
   };
 
   return (
@@ -84,8 +87,8 @@ export default function LoginForm() {
                 <span className="text-red-600">{errors.password.message}</span>
               )}
             </div>
-            <Button type="submit" className="w-full">
-              Login
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Loading..." : "Login"}
             </Button>
           </form>
         </CardContent>
