@@ -1,38 +1,23 @@
-import { getServerSession } from "next-auth";
 import { UserRoles } from "@prisma/client";
-import prisma from "../../prisma/client";
 import { redirect } from "next/navigation";
+import { getUserAndRole } from "@/lib/auth/authUtils";
+import AdminLanding from "@/components/admin/AdminLanding";
+import WorkerLanding from "@/components/workers/WorkersLanding";
 
 export default async function Home() {
-  const session = await getServerSession();
-
-  if (!session) {
-    return redirect("/login");
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session.user?.email as string,
-    },
-    select: {
-      id: true,
-      email: true,
-      username: true,
-      firstName: true,
-      lastName: true,
-      role: true,
-    },
-  });
+  const { user } = await getUserAndRole();
 
   if (!user) {
     return redirect("/login");
   }
 
+  if (!user) return redirect("/login");
+
   switch (user.role) {
     case UserRoles.HeadAdmin:
-      return redirect("/admin-panel/dashboard");
+      return <AdminLanding />;
     case UserRoles.Worker:
-      return redirect("/worker-panel/porudzbine");
+      return <WorkerLanding />;
     default:
       return redirect("/login");
   }
