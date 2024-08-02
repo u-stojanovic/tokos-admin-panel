@@ -98,7 +98,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       message:
-        "User created successfully. Please check your email to verify your account.",
+        "User je napravljen uspešno, obavestite korisnika, i neka provere folder nepoželjeno ili spam u slučaju da nema na početnoj strani",
       user: {
         id: newUser.id,
         email: newUser.email,

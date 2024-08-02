@@ -4,17 +4,12 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { z } from "zod";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { MdArrowBack } from "react-icons/md";
 
 const registerSchema = z
   .object({
@@ -82,15 +77,16 @@ export default function RegisterForm() {
 
   return (
     <section className="mx-auto flex flex-col justify-center items-center content-center mt-10">
+      <Link
+        href="/admin-panel/dashboard"
+        className="flex items-center text-blue-600 hover:underline mb-4"
+      >
+        <MdArrowBack className="mr-2" />
+        idite nazad na panel
+      </Link>
       <Card className="w-full max-w-3xl">
         <CardHeader>
-          <CardTitle className="text-3xl">Create account</CardTitle>
-          <CardDescription>
-            Already have an account?{" "}
-            <Link href="/login" className="underline" prefetch={false}>
-              Login
-            </Link>
-          </CardDescription>
+          <CardTitle className="text-3xl">Napravite novog Korisnika</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
