@@ -15,12 +15,13 @@ import Image from "next/image";
 
 // NOTE: Add user, isAuthenticated and isLoading
 
-export default function Sidebar() {
+export default function WorkerSidebar() {
   const pathname = usePathname();
+  console.log("pathname: ", pathname);
   // const { user, isAuthenticated, isLoading } = useKindeBrowserClient();
 
   const isActive = (path: string) =>
-    pathname === path
+    pathname.startsWith(path)
       ? "bg-gray-800 text-white"
       : "text-gray-400 hover:bg-gray-800 hover:text-white";
 
@@ -38,16 +39,7 @@ export default function Sidebar() {
       </Link>
       <nav className="flex flex-1 flex-col items-start justify-start gap-2 overflow-auto p-4">
         <Link
-          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/")}`}
-          href="/"
-        >
-          <HomeIcon className="h-5 w-5" />
-          <span className="group-hover:block hidden transition-opacity delay-300 duration-500">
-            Dashboard
-          </span>
-        </Link>
-        <Link
-          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/dashboard")}`}
+          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/porudzbine")}`}
           href="/porudzbine"
         >
           <MdOutlineBorderColor className="h-5 w-5" />
@@ -56,7 +48,7 @@ export default function Sidebar() {
           </span>
         </Link>
         <Link
-          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/improvements")}`}
+          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/proizvodi")}`}
           href="/proizvodi"
         >
           <FaDropbox className="h-5 w-5" />
@@ -66,7 +58,7 @@ export default function Sidebar() {
         </Link>
 
         <Link
-          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/history")}`}
+          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/istorija")}`}
           href="/istorija"
         >
           <HistoryIcon className="h-5 w-5" />
@@ -76,16 +68,7 @@ export default function Sidebar() {
         </Link>
 
         <Link
-          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/settings")}`}
-          href="/podesavanja"
-        >
-          <SettingsIcon className="h-5 w-5" />
-          <span className="group-hover:block hidden transition-opacity delay-300 duration-500">
-            Podešavanja
-          </span>
-        </Link>
-        <Link
-          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/settings")}`}
+          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/notifikacije")}`}
           href="/notifikacije"
         >
           <Bell className="h-5 w-5" />

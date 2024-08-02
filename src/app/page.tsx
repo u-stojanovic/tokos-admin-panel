@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 
 export default async function Home() {
   const session = await getServerSession();
-  console.log("session: ", session);
 
   if (!session) {
     return redirect("/login");
@@ -25,11 +24,16 @@ export default async function Home() {
     },
   });
 
-  console.log("user: ", user);
-
-  if (!user || user.role !== UserRoles.HeadAdmin) {
+  if (!user) {
     return redirect("/login");
   }
 
-  return redirect("/dashboard");
+  switch (user.role) {
+    case UserRoles.HeadAdmin:
+      return redirect("/admin-panel/dashboard");
+    case UserRoles.Worker:
+      return redirect("/worker-panel/porudzbine");
+    default:
+      return redirect("/login");
+  }
 }
