@@ -17,10 +17,11 @@ import Image from "next/image";
 
 export default function Sidebar() {
   const pathname = usePathname();
+  console.log("pathname: ", pathname);
   // const { user, isAuthenticated, isLoading } = useKindeBrowserClient();
 
   const isActive = (path: string) =>
-    pathname === path
+    pathname.startsWith(path)
       ? "bg-gray-800 text-white"
       : "text-gray-400 hover:bg-gray-800 hover:text-white";
 
@@ -28,7 +29,7 @@ export default function Sidebar() {
     <aside className="group relative flex h-screen w-16 flex-col items-center bg-gray-900 transition-all duration-300 hover:w-64 dark:bg-gray-950">
       <Link
         className="flex h-16 w-full items-center justify-center border-b border-gray-800 dark:border-gray-800"
-        href="#"
+        href="/"
       >
         <Image src="/logo.png" width={70} height={70} alt="Logo" />
 
@@ -38,8 +39,8 @@ export default function Sidebar() {
       </Link>
       <nav className="flex flex-1 flex-col items-start justify-start gap-2 overflow-auto p-4">
         <Link
-          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/")}`}
-          href="/"
+          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/dashboard")}`}
+          href="/dashboard"
         >
           <HomeIcon className="h-5 w-5" />
           <span className="group-hover:block hidden transition-opacity delay-300 duration-500">
@@ -47,8 +48,8 @@ export default function Sidebar() {
           </span>
         </Link>
         <Link
-          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/dashboard")}`}
-          href="/dashboard"
+          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/porudzbine")}`}
+          href="/porudzbine"
         >
           <MdOutlineBorderColor className="h-5 w-5" />
           <span className="group-hover:block hidden transition-opacity delay-300 duration-500">
@@ -56,8 +57,8 @@ export default function Sidebar() {
           </span>
         </Link>
         <Link
-          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/improvements")}`}
-          href="/improvements"
+          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/proizvodi")}`}
+          href="/proizvodi"
         >
           <FaDropbox className="h-5 w-5" />
           <span className="group-hover:block hidden transition-opacity delay-300 duration-500">
@@ -66,8 +67,8 @@ export default function Sidebar() {
         </Link>
 
         <Link
-          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/history")}`}
-          href="/history"
+          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/istorija")}`}
+          href="/istorija"
         >
           <HistoryIcon className="h-5 w-5" />
           <span className="group-hover:block hidden transition-opacity delay-300 duration-500">
@@ -76,8 +77,8 @@ export default function Sidebar() {
         </Link>
 
         <Link
-          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/settings")}`}
-          href="/settings"
+          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/podesavanja")}`}
+          href="/podesavanja"
         >
           <SettingsIcon className="h-5 w-5" />
           <span className="group-hover:block hidden transition-opacity delay-300 duration-500">
@@ -85,8 +86,8 @@ export default function Sidebar() {
           </span>
         </Link>
         <Link
-          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/settings")}`}
-          href="/notifications"
+          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/notifikacije")}`}
+          href="/notifikacije"
         >
           <Bell className="h-5 w-5" />
           <span className="group-hover:block hidden transition-opacity delay-300 duration-500">
