@@ -21,9 +21,9 @@ export default async function AdminLayout({
   switch (user.role) {
     case UserRoles.HeadAdmin:
       return (
-        <div className="flex h-screen bg-gray-100 dark:bg-gray-800">
+        <div className="flex h-screen bg-gray-100 dark:bg-gray-800 overflow-hidden">
           <AdminSidebar user={user} />
-          <div className="flex-1 p-8">{children}</div>
+          <div className="flex-1 overflow-auto p-8">{children}</div>
         </div>
       );
     case UserRoles.Worker:

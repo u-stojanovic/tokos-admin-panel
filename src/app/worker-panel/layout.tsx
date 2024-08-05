@@ -19,9 +19,9 @@ export default async function WorkerLayout({
   switch (user.role) {
     case UserRoles.Worker:
       return (
-        <div className="flex h-screen bg-gray-100 dark:bg-gray-800">
+        <div className="flex h-screen bg-gray-100 dark:bg-gray-800 overflow-hidden">
           <WorkerSidebar user={user} />
-          <div className="flex-1 p-8">{children}</div>
+          <div className="flex-1 overflow-auto p-8">{children}</div>
         </div>
       );
     case UserRoles.HeadAdmin:
