@@ -44,8 +44,8 @@ export default function WorkerSidebar({ user }: WorkerSidebarProps) {
           </span>
         </Link>
         <Link
-          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/worker-panel/proizvodi")}`}
-          href="/worker-panel/proizvodi"
+          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/proizvodi")}`}
+          href="/proizvodi"
         >
           <FaDropbox className="h-5 w-5" />
           <span className="group-hover:block hidden transition-opacity delay-300 duration-500">
