@@ -82,7 +82,7 @@ export default function RegisterForm() {
         className="flex items-center text-blue-600 hover:underline mb-4"
       >
         <MdArrowBack className="mr-2" />
-        idite nazad na panel
+        Idite nazad na panel
       </Link>
       <Card className="w-full max-w-3xl">
         <CardHeader>

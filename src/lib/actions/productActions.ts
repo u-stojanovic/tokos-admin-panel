@@ -30,6 +30,26 @@ export async function getProducts(): Promise<ProductWithRelations[]> {
   }
 }
 
+export async function getProductById(id: number) {
+  try {
+    const product = await prisma.product.findUnique({
+      where: { id: Number(id) },
+      include: {
+        category: true,
+        images: true,
+        ingredients: {
+          include: {
+            ingredient: true,
+          },
+        },
+      },
+    });
+    return product;
+  } catch (error) {
+    console.log("error: ", error);
+  }
+}
+
 export async function deleteProduct(productId: number) {
   try {
     await prisma.$transaction([

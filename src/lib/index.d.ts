@@ -8,6 +8,17 @@ export interface UserInformation {
   isActive: boolean;
 }
 
+export type Product = {
+  id: number;
+  name: string;
+  description: string;
+  price: number | null;
+  categoryId: number;
+  images: Image[];
+  category: Category;
+  ingredients: ProductIngredient[];
+};
+
 export type ProductWithRelations = {
   id: number;
   name: string;
