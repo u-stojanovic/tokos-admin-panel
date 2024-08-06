@@ -1,3 +1,5 @@
+import { ProductIngredient } from "@prisma/client";
+
 export interface UserInformation {
   username: string;
   email: string;

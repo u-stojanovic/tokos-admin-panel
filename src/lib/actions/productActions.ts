@@ -71,7 +71,6 @@ export async function deleteProduct(productId: number) {
   }
 }
 
-// NOTE: use proper type
 export async function submitEdit(formValues: any) {
   try {
   } catch (error) {}
