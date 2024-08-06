@@ -6,13 +6,6 @@ export default async function ProductEditSlug({
 }: {
   params: { id: number };
 }) {
-  // NOTE:
-  // fetch
-  // display data
-  // form
-  // preview changed data
-  // submit the new data
-
   const product = await getProductById(params.id);
 
   if (!product) {

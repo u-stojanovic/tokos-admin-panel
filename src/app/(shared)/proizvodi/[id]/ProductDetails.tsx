@@ -1,4 +1,5 @@
 "use client";
+
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -116,7 +117,7 @@ export default function ProductDetails({ product }: ProductPageProps) {
               Ingredients
             </h2>
             <ul className="list-disc list-inside text-lg text-gray-600 dark:text-darkMode-primary">
-              {product.ingredients.map(({ ingredient }) => (
+              {product.ingredients.map(({ ingredient }: any) => (
                 <li key={ingredient.id}>
                   {ingredient.name} {ingredient.isAlergen ? "(Allergen)" : ""}
                 </li>

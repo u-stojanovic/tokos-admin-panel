@@ -1,4 +1,5 @@
 "use client";
+
 import { ProductWithRelations, UserInformation } from "@/lib";
 import Image from "next/image";
 import { DeleteProduct } from "@/components/admin/utils/deleteProduct";

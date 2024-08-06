@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import ProductCard from "@/components/shared/ProductCard";
 import ProductSkeleton from "@/components/shared/ProductSkeleton";
