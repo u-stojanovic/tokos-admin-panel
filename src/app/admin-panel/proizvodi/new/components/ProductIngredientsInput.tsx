@@ -40,7 +40,10 @@ export const ProductIngredientsInput: React.FC<ProductIngredientsProps> = ({
           </div>
         ))}
       </div>
-      <div className="bg-white p-4 rounded-lg shadow mt-4">
+      <div className="flex flex-col gap-2 bg-white p-4 rounded-lg shadow mt-4">
+        <Label htmlFor="createNewIngredient" className="text-lg font-semibold">
+          Create new Ingredient
+        </Label>
         <Input
           type="text"
           placeholder="Enter new ingredient"

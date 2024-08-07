@@ -3,27 +3,13 @@ import Image from "next/image";
 import { FaTrash } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { useImageUpload } from "@/context/ImageUploadContext";
-import { ref, deleteObject } from "firebase/storage";
-import { storage } from "@/lib/configs/firebaseConfig";
 import { Label } from "@/components/ui/label";
 
 export const UploadedImages: React.FC = () => {
   const { images, removeImage } = useImageUpload();
 
-  const handleImageDelete = (filePath: string) => {
-    if (filePath.startsWith("temp-images")) {
-      const fileRef = ref(storage, filePath);
-      deleteObject(fileRef)
-        .then(() => {
-          console.log(`Deleted ${filePath} successfully`);
-          removeImage(filePath);
-        })
-        .catch((error) => {
-          console.log(`Failed to delete ${filePath}`, error);
-        });
-    } else {
-      removeImage(filePath);
-    }
+  const handleImageDelete = (url: string) => {
+    removeImage(url);
   };
 
   return (
@@ -43,8 +29,9 @@ export const UploadedImages: React.FC = () => {
             />
             <Button
               size="icon"
+              type="button"
               className="absolute top-0 right-0 bg-red-600 text-white p-1"
-              onClick={() => handleImageDelete(img.filePath)}
+              onClick={() => handleImageDelete(img.url)}
             >
               <FaTrash />
             </Button>

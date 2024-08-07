@@ -20,11 +20,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Category } from "@prisma/client";
 import { getCategories } from "@/lib/actions/categoriesActions";
+import { z } from "zod";
+import { useToast } from "@/components/ui/use-toast";
 
 interface CategoriesComboBoxProps {
   currCategory?: string | undefined;
   onChange: (category: string) => void;
 }
+
+const categorySchema = z
+  .string()
+  .min(1, "Category name is required")
+  .max(50, "Category name must be less than 50 characters");
 
 export function CategoriesComboBox({
   currCategory,
@@ -34,6 +41,7 @@ export function CategoriesComboBox({
   const [categories, setCategories] = React.useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = React.useState(currCategory);
   const [newCategory, setNewCategory] = React.useState("");
+  const { toast } = useToast();
 
   React.useEffect(() => {
     async function fetchCategories() {
@@ -61,9 +69,21 @@ export function CategoriesComboBox({
   };
 
   const handleAddNewCategory = () => {
-    setSelectedCategory(newCategory);
-    onChange(newCategory);
-    setOpen(false);
+    try {
+      categorySchema.parse(newCategory);
+      setSelectedCategory(newCategory);
+      onChange(newCategory);
+      setOpen(false);
+    } catch (e) {
+      if (e instanceof z.ZodError) {
+        e.errors.forEach((error) => {
+          toast({
+            title: "Validation Error",
+            description: error.message,
+          });
+        });
+      }
+    }
   };
 
   return (

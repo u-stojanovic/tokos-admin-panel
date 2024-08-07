@@ -4,9 +4,7 @@ import React from "react";
 import { useForm, FormProvider, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/components/ui/use-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
-import { submitCreate } from "@/lib/actions/productActions";
 import { Ingredient } from "@prisma/client";
 import { CheckedState } from "@radix-ui/react-checkbox";
 
@@ -16,13 +14,12 @@ import { ProductCategoryInput } from "./components/ProductCategoryInput";
 import { ProductIngredientsInput } from "./components/ProductIngredientsInput";
 import { ProductPriceInput } from "./components/ProductPriceInput";
 import { UploadedImages } from "./components/UploadedImages";
-import UploadNewImage from "./uploadImage";
+import UploadNewImage from "./components/uploadImage";
 
+import { useProductCreationMutation } from "@/lib/hooks/useSubmitProductCreation";
 import { useImageUpload } from "@/context/ImageUploadContext";
 import { useSelectIngredients } from "@/context/ProductIngredientsSelectContext";
 import { Button } from "@/components/ui/button";
-import { storage } from "@/lib/configs/firebaseConfig";
-import { ref, deleteObject } from "firebase/storage";
 
 const productSchema = z.object({
   name: z.string().min(1, "Product name is required"),
@@ -46,7 +43,8 @@ interface NewProductFormProps {
 }
 
 export default function NewProductForm({ ingredients }: NewProductFormProps) {
-  const { images, removeImage } = useImageUpload();
+  const { uploadImagesToFirebase } = useImageUpload();
+  const mutation = useProductCreationMutation();
   const { addedIngredients, addIngredient, removeIngredient } =
     useSelectIngredients();
 
@@ -64,27 +62,7 @@ export default function NewProductForm({ ingredients }: NewProductFormProps) {
     }
   };
 
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: (data: any) => submitCreate(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["products"] });
-      toast({
-        title: "Product Created",
-        description: "Product Successfully created",
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: "Failed to create a product",
-      });
-      console.log("error: ", error);
-    },
-  });
-
-  const onSubmit: SubmitHandler<ProductFormInputs> = (data) => {
+  const onSubmit: SubmitHandler<ProductFormInputs> = async (data) => {
     if (addedIngredients.length === 0) {
       toast({
         title: "Error",
@@ -92,34 +70,26 @@ export default function NewProductForm({ ingredients }: NewProductFormProps) {
       });
       return;
     }
-    mutation.mutate({
-      ...data,
-      images: images.map((img) => img.url),
-      addedIngredients,
-    });
+
+    try {
+      const imageUrls = await uploadImagesToFirebase();
+      mutation.mutate({
+        ...data,
+        images: imageUrls,
+        addedIngredients,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to upload images",
+      });
+      console.log("Image upload error: ", error);
+    }
   };
 
   const handleCategoryChange = (category: string) => {
     methods.setValue("category", category);
   };
-
-  React.useEffect(() => {
-    return () => {
-      images.forEach((img) => {
-        if (img.filePath.startsWith("temp-images")) {
-          const fileRef = ref(storage, img.filePath);
-          deleteObject(fileRef)
-            .then(() => {
-              console.log(`Deleted ${img.filePath} successfully`);
-              removeImage(img.filePath);
-            })
-            .catch((error) => {
-              console.log(`Failed to delete ${img.filePath}`, error);
-            });
-        }
-      });
-    };
-  }, [images, removeImage]);
 
   return (
     <div className="grid gap-4">
