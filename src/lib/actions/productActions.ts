@@ -111,3 +111,24 @@ export async function submitEdit(
     await prisma.$disconnect();
   }
 }
+
+export async function submitCreate(formValues: any): Promise<Product> {
+  try {
+    const foundCategory = await prisma.category.findFirst({
+      where: { name: formValues.category },
+    });
+
+    const categoryData = foundCategory
+      ? { connect: { id: foundCategory.id } }
+      : { create: { name: formValues.category } };
+
+    const newProduct = await prisma.product.findMany();
+    // FIX: Return the new created product
+    return newProduct;
+  } catch (error) {
+    console.log("Error updating product: ", error);
+    throw new Error("Failed to update product");
+  } finally {
+    await prisma.$disconnect();
+  }
+}

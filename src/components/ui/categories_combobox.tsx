@@ -22,7 +22,7 @@ import { Category } from "@prisma/client";
 import { getCategories } from "@/lib/actions/categoriesActions";
 
 interface CategoriesComboBoxProps {
-  currCategory: string;
+  currCategory?: string | undefined;
   onChange: (category: string) => void;
 }
 
