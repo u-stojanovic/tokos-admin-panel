@@ -1,34 +1,42 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Ingredient } from "@prisma/client";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { useAddIngredientMutation } from "@/lib/hooks/useIngredientCreationMutation";
+import { useCreateNewIngredientMutation } from "@/lib/hooks/useIngredientCreationMutation";
 import { useFetchIngredients } from "@/lib/hooks/useIngredientsFetch";
+import { useSelectIngredients } from "@/context/ProductIngredientsSelectContext";
 
-interface ProductIngredientsProps {
-  handleCheckChange: (checked: CheckedState, ingredient: Ingredient) => void;
-}
-
-export const ProductIngredientsInput: React.FC<ProductIngredientsProps> = ({
-  handleCheckChange,
-}) => {
+// Component for managing product ingredients:
+// fetching, displaying, and adding new ingredients
+export const ProductIngredientsInput: React.FC = () => {
+  const { addIngredient, removeIngredient } = useSelectIngredients();
   const { data: ingredients, isLoading } = useFetchIngredients();
+  const { mutate: createNewIngredient, isPending } =
+    useCreateNewIngredientMutation();
 
-  const [newIngredientName, setNewIngredientName] = useState("");
-  const [isAlergen, setIsAlergen] = useState(false);
+  const [newIngredientName, setNewIngredientName] = React.useState("");
+  const [isAlergen, setIsAlergen] = React.useState(false);
 
-  const { mutate: addIngredient, isPending } = useAddIngredientMutation();
-
+  // Handler for adding new ingredient
   const handleAddIngredient = () => {
     if (newIngredientName.trim()) {
-      addIngredient({ name: newIngredientName, isAlergen });
+      createNewIngredient({ name: newIngredientName, isAlergen });
       setNewIngredientName("");
       setIsAlergen(false);
+    }
+  };
+
+  // Handler for checkbox state change
+  const handleCheckChange = (checked: CheckedState, ingredient: Ingredient) => {
+    if (checked === true) {
+      addIngredient(ingredient.name, ingredient.isAlergen);
+    } else if (checked === false) {
+      removeIngredient(ingredient.name);
     }
   };
 

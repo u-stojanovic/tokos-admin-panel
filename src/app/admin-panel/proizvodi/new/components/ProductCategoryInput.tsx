@@ -3,12 +3,15 @@ import { useFormContext } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { CategoriesComboBox } from "@/components/ui/categories_combobox";
 
-export const ProductCategoryInput: React.FC<{
-  handleCategoryChange: (category: string) => void;
-}> = ({ handleCategoryChange }) => {
+export const ProductCategoryInput: React.FC = () => {
   const {
+    setValue,
     formState: { errors },
   } = useFormContext();
+
+  const handleCategoryChange = (category: string) => {
+    setValue("category", category);
+  };
 
   return (
     <div className="grid gap-2">
