@@ -51,8 +51,8 @@ export default function ProductDetails({ product }: ProductPageProps) {
                   src={image.imageUrl}
                   alt={`${product.name} image ${index + 1}`}
                   loading="lazy"
-                  width={800}
-                  height={800}
+                  width={1000}
+                  height={1000}
                   className="object-cover rounded-lg"
                 />
               </SwiperSlide>
@@ -71,8 +71,8 @@ export default function ProductDetails({ product }: ProductPageProps) {
                 <Image
                   src={image.imageUrl}
                   alt={`Thumbnail ${index + 1}`}
-                  width={80}
-                  height={80}
+                  width={100}
+                  height={100}
                   className="object-cover rounded-lg"
                 />
               </SwiperSlide>
@@ -88,21 +88,6 @@ export default function ProductDetails({ product }: ProductPageProps) {
           </div>
           <div className="text-3xl font-bold text-lightMode-text dark:text-darkMode-text">
             ${product.price ? product.price : 20}
-          </div>
-          <div className="flex space-x-4">
-            <Button
-              size="lg"
-              className="bg-lightMode-primary text-lightMode-text dark:bg-darkMode-primary dark:text-lightMode-text"
-            >
-              Add to cart
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-lightMode-primary text-darkMode-primary dark:border-darkMode-primary dark:text-darkMode-primary"
-            >
-              Buy Now
-            </Button>
           </div>
           <div>
             <h2 className="text-2xl font-semibold text-lightMode-text dark:text-darkMode-text">
