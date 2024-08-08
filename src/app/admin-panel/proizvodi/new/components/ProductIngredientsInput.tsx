@@ -2,11 +2,13 @@
 
 import React from "react";
 import { Ingredient } from "@prisma/client";
-import { Checkbox } from "@/components/ui/checkbox";
-import { CheckedState } from "@radix-ui/react-checkbox";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { CheckedState } from "@radix-ui/react-checkbox";
+
 import { useCreateNewIngredientMutation } from "@/lib/hooks/useIngredientCreationMutation";
 import { useFetchIngredients } from "@/lib/hooks/useIngredientsFetch";
 import { useSelectIngredients } from "@/context/ProductIngredientsSelectContext";
