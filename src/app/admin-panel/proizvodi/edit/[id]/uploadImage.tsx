@@ -57,7 +57,7 @@ export default function ProductImages({ product }: ProductImagesProps) {
     <div className="space-y-6">
       <Swiper
         modules={[Navigation, EffectFade, Thumbs]}
-        loop
+        loop={false}
         spaceBetween={10}
         slidesPerView={1}
         navigation
@@ -75,8 +75,8 @@ export default function ProductImages({ product }: ProductImagesProps) {
                 src={image.imageUrl}
                 alt={`${product.name} image ${index + 1}`}
                 loading="lazy"
-                width={800}
-                height={800}
+                width={1000}
+                height={1000}
                 className="object-cover rounded-lg"
               />
             </SwiperSlide>
@@ -95,8 +95,8 @@ export default function ProductImages({ product }: ProductImagesProps) {
             <Image
               src={image.imageUrl}
               alt={`Thumbnail ${index + 1}`}
-              width={80}
-              height={80}
+              width={100}
+              height={100}
               className="object-cover rounded-lg"
             />
           </SwiperSlide>
