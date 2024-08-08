@@ -17,6 +17,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { FaTrash } from "react-icons/fa";
 
 interface ProductImagesProps {
   product: Product;
@@ -69,7 +70,7 @@ export default function ProductImages({ product }: ProductImagesProps) {
           product.images.map((image, index) => (
             <SwiperSlide
               key={index}
-              className="flex justify-center items-center"
+              className="flex justify-center items-center relative"
             >
               <Image
                 src={image.imageUrl}
@@ -79,6 +80,12 @@ export default function ProductImages({ product }: ProductImagesProps) {
                 height={1000}
                 className="object-cover rounded-lg"
               />
+              <button
+                onClick={() => console.log(`Delete image ${index}`)}
+                className="absolute top-2 right-2 p-1 bg-red-500 rounded-full text-white"
+              >
+                <FaTrash />
+              </button>
             </SwiperSlide>
           ))}
       </Swiper>
@@ -91,14 +98,20 @@ export default function ProductImages({ product }: ProductImagesProps) {
         className="w-full h-auto"
       >
         {product.images.map((image, index) => (
-          <SwiperSlide key={index} className="cursor-pointer">
+          <SwiperSlide key={index} className="cursor-pointer relative">
             <Image
               src={image.imageUrl}
               alt={`Thumbnail ${index + 1}`}
-              width={100}
-              height={100}
+              width={250}
+              height={250}
               className="object-cover rounded-lg"
             />
+            <button
+              onClick={() => console.log(`Delete image ${index}`)}
+              className="absolute top-2 right-2 p-1 bg-red-500 rounded-full text-white"
+            >
+              <FaTrash />
+            </button>
           </SwiperSlide>
         ))}
       </Swiper>

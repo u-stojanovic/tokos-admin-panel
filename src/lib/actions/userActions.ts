@@ -1,7 +1,9 @@
 "use server";
+import { cookies } from "next/headers";
 import prisma from "../../../prisma/client";
 
 export async function getTotalUsers() {
+  const _ = cookies();
   try {
     const userCount = await prisma.user.aggregate({
       _count: true,
@@ -14,6 +16,7 @@ export async function getTotalUsers() {
 }
 
 export async function getUsers() {
+  const _ = cookies();
   try {
     const users = await prisma.user.findMany({
       orderBy: {

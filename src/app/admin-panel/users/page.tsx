@@ -1,10 +1,40 @@
+"use client";
+import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { UserIcon, SearchIcon } from "lucide-react";
+import { SearchIcon } from "lucide-react";
 import Link from "next/link";
+import { useUsers } from "@/lib/hooks/useUsers";
+import UserCard from "./UserCard";
+import { User } from "@prisma/client";
 
-export default async function Users() {
+export default function Users() {
+  const { data: users, isLoading } = useUsers();
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [filteredUsers, setFilteredUsers] = React.useState<User[]>([]);
+
+  React.useEffect(() => {
+    if (users) {
+      setFilteredUsers(users as User[]);
+    }
+  }, [users]);
+
+  React.useEffect(() => {
+    if (users) {
+      const result = (users as User[]).filter(
+        (user) =>
+          user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          user.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          user.email.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+      setFilteredUsers(result);
+    }
+  }, [searchQuery, users]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="flex flex-col w-full px-4 py-6">
       <div className="flex justify-between items-center mb-6">
@@ -14,6 +44,8 @@ export default async function Users() {
             type="search"
             placeholder="Search users..."
             className="pl-10"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
         <Link href="/register">
@@ -21,18 +53,7 @@ export default async function Users() {
         </Link>
       </div>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardContent className="flex items-center gap-4 p-4">
-            <UserIcon />
-            <div className="flex-1 space-y-1">
-              <h3 className="text-lg font-semibold">User Name</h3>
-              <p className="text-sm text-gray-500">Role</p>
-            </div>
-            <Button variant="outline" size="sm">
-              View Details
-            </Button>
-          </CardContent>
-        </Card>
+        <UserCard users={filteredUsers} />
       </div>
     </div>
   );
