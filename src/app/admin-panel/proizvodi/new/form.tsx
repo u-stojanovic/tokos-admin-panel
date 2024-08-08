@@ -38,11 +38,7 @@ const productSchema = z.object({
 
 type ProductFormInputs = z.infer<typeof productSchema>;
 
-interface NewProductFormProps {
-  ingredients: Ingredient[];
-}
-
-export default function NewProductForm({ ingredients }: NewProductFormProps) {
+export default function NewProductForm() {
   const { uploadImagesToFirebase } = useImageUpload();
   const mutation = useProductCreationMutation();
   const { addedIngredients, addIngredient, removeIngredient } =
@@ -102,10 +98,7 @@ export default function NewProductForm({ ingredients }: NewProductFormProps) {
           <ProductNameInput />
           <ProductDescriptionInput />
           <ProductCategoryInput handleCategoryChange={handleCategoryChange} />
-          <ProductIngredientsInput
-            ingredients={ingredients}
-            handleCheckChange={handleCheckChange}
-          />
+          <ProductIngredientsInput handleCheckChange={handleCheckChange} />
           <ProductPriceInput />
           <UploadNewImage />
           <UploadedImages />

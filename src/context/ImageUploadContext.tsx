@@ -31,6 +31,10 @@ export const ImageUploadProvider: React.FC<{ children: React.ReactNode }> = ({
     setImages((prevImages) => prevImages.filter((img) => img.url !== filePath));
   };
 
+  React.useEffect(() => {
+    console.log("images: ", images);
+  }, [images]);
+
   const uploadImagesToFirebase = async () => {
     const uploadPromises = images.map(async (img) => {
       if (typeof img.file === "string") {
