@@ -12,6 +12,7 @@ import { CheckedState } from "@radix-ui/react-checkbox";
 import { useCreateNewIngredientMutation } from "@/lib/hooks/useIngredientCreationMutation";
 import { useFetchIngredients } from "@/lib/hooks/useIngredientsFetch";
 import { useSelectIngredients } from "@/context/ProductIngredientsSelectContext";
+import { useFormContext } from "react-hook-form";
 
 // Component for managing product ingredients:
 // fetching, displaying, and adding new ingredients
@@ -20,6 +21,7 @@ export const ProductIngredientsInput: React.FC = () => {
   const { data: ingredients, isLoading } = useFetchIngredients();
   const { mutate: createNewIngredient, isPending } =
     useCreateNewIngredientMutation();
+  const { setValue, getValues } = useFormContext();
 
   const [newIngredientName, setNewIngredientName] = React.useState("");
   const [isAlergen, setIsAlergen] = React.useState(false);
@@ -35,10 +37,19 @@ export const ProductIngredientsInput: React.FC = () => {
 
   // Handler for checkbox state change
   const handleCheckChange = (checked: CheckedState, ingredient: Ingredient) => {
+    const currentIngredients = getValues("addedIngredients") || [];
     if (checked === true) {
       addIngredient(ingredient.name, ingredient.isAlergen);
+      setValue("addedIngredients", [
+        ...currentIngredients,
+        { name: ingredient.name, isAlergen: ingredient.isAlergen },
+      ]);
     } else if (checked === false) {
       removeIngredient(ingredient.name);
+      setValue(
+        "addedIngredients",
+        currentIngredients.filter((ing: any) => ing.name !== ingredient.name),
+      );
     }
   };
 
