@@ -3,9 +3,11 @@ import prisma from "../../../prisma/client";
 import { ProductWithRelations } from "..";
 import { Product } from "@prisma/client";
 import { ProductFormInputs } from "@/app/admin-panel/proizvodi/new/form";
+import { cookies } from "next/headers";
 
 // Fetch total number of products
 export async function getTotalProducts() {
+  const _ = cookies();
   try {
     const productCount = await prisma.product.aggregate({
       _count: true,
@@ -21,6 +23,7 @@ export async function getTotalProducts() {
 
 // Fetch all products with related data
 export async function getProducts(): Promise<ProductWithRelations[]> {
+  const _ = cookies();
   try {
     const products = await prisma.product.findMany({
       include: {

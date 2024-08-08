@@ -48,7 +48,7 @@ export default function Proizvodi() {
             </Link>
           )}
         </div>
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
           {products &&
             user &&
             products.map((product) => (

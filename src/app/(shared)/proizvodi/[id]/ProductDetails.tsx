@@ -34,7 +34,7 @@ export default function ProductDetails({ product }: ProductPageProps) {
         <div className="space-y-6">
           <Swiper
             modules={[Navigation, EffectFade, Thumbs]}
-            loop
+            loop={false}
             spaceBetween={10}
             slidesPerView={1}
             navigation
