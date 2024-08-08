@@ -113,27 +113,35 @@ export default function NewProductForm() {
   };
 
   return (
-    <div className="grid gap-4">
-      <h1 className="font-bold text-2xl sm:text-3xl">Create Product</h1>
+    <div className="grid gap-4 max-w-4xl mx-auto py-6">
+      <h1 className="font-bold text-2xl sm:text-3xl text-center">
+        Create Product
+      </h1>
       <FormProvider {...methods}>
         <form
-          className="grid gap-4 md:gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 gap-6"
           onSubmit={methods.handleSubmit(onSubmit, onError)}
         >
-          <ProductNameInput />
-          <ProductDescriptionInput />
-          <ProductCategoryInput />
-          <ProductIngredientsInput />
-          <ProductPriceInput />
-          <UploadNewImage />
-          <UploadedImages />
-          <Button
-            size="lg"
-            type="submit"
-            disabled={mutation.isPending || isLoading}
-          >
-            {isLoading || mutation.isPending ? "Creating..." : "Create Product"}
-          </Button>
+          <div className="flex flex-col gap-6">
+            <ProductNameInput />
+            <ProductDescriptionInput />
+            <ProductCategoryInput />
+            <ProductPriceInput />
+            <UploadNewImage />
+            <Button
+              size="lg"
+              type="submit"
+              disabled={mutation.isPending || isLoading}
+            >
+              {isLoading || mutation.isPending
+                ? "Creating..."
+                : "Create Product"}
+            </Button>
+          </div>
+          <div className="flex flex-col gap-6">
+            <ProductIngredientsInput />
+            <UploadedImages />
+          </div>
         </form>
       </FormProvider>
     </div>

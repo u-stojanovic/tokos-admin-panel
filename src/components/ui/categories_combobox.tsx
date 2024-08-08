@@ -105,23 +105,24 @@ export function CategoriesComboBox({
           <CommandList>
             <CommandEmpty>No category found.</CommandEmpty>
             <CommandGroup>
-              {categories.map((category) => (
-                <CommandItem
-                  key={category.id}
-                  value={category.name}
-                  onSelect={() => handleSelect(category.name)}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      selectedCategory === category.name
-                        ? "opacity-100"
-                        : "opacity-0",
-                    )}
-                  />
-                  {category.name}
-                </CommandItem>
-              ))}
+              {categories &&
+                categories.map((category) => (
+                  <CommandItem
+                    key={category.id}
+                    value={category.name}
+                    onSelect={() => handleSelect(category.name)}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        selectedCategory === category.name
+                          ? "opacity-100"
+                          : "opacity-0",
+                      )}
+                    />
+                    {category.name}
+                  </CommandItem>
+                ))}
             </CommandGroup>
             <CommandItem
               key="new-category"
