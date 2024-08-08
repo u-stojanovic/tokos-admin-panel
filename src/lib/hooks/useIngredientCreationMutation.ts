@@ -3,7 +3,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { addIngredient } from "@/lib/actions/ingredientsActions";
 import { Ingredient } from "@prisma/client";
 
-export const useAddIngredientMutation = () => {
+export const useCreateNewIngredientMutation = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 

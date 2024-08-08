@@ -1,12 +1,13 @@
 "use client";
 
 import React from "react";
+
 import { useForm, FormProvider, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useToast } from "@/components/ui/use-toast";
 import { z } from "zod";
-import { Ingredient } from "@prisma/client";
-import { CheckedState } from "@radix-ui/react-checkbox";
+
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
 
 import { ProductNameInput } from "./components/ProductNameInput";
 import { ProductDescriptionInput } from "./components/ProductDescriptionInput";
@@ -19,8 +20,8 @@ import UploadNewImage from "./components/uploadImage";
 import { useProductCreationMutation } from "@/lib/hooks/useSubmitProductCreation";
 import { useImageUpload } from "@/context/ImageUploadContext";
 import { useSelectIngredients } from "@/context/ProductIngredientsSelectContext";
-import { Button } from "@/components/ui/button";
 
+// schema for product form validation
 const productSchema = z.object({
   name: z.string().min(1, "Product name is required"),
   description: z.string().min(1, "Product description is required"),
@@ -38,26 +39,19 @@ const productSchema = z.object({
 
 type ProductFormInputs = z.infer<typeof productSchema>;
 
+// Component for creating a new product
 export default function NewProductForm() {
   const { uploadImagesToFirebase } = useImageUpload();
   const mutation = useProductCreationMutation();
-  const { addedIngredients, addIngredient, removeIngredient } =
-    useSelectIngredients();
-
-  const { toast } = useToast();
+  const { addedIngredients } = useSelectIngredients();
 
   const methods = useForm<ProductFormInputs>({
     resolver: zodResolver(productSchema),
   });
 
-  const handleCheckChange = (checked: CheckedState, ingredient: Ingredient) => {
-    if (checked === true) {
-      addIngredient(ingredient.name, ingredient.isAlergen);
-    } else if (checked === false) {
-      removeIngredient(ingredient.name);
-    }
-  };
+  const { toast } = useToast();
 
+  // Form submission handler
   const onSubmit: SubmitHandler<ProductFormInputs> = async (data) => {
     if (addedIngredients.length === 0) {
       toast({
@@ -79,12 +73,8 @@ export default function NewProductForm() {
         title: "Error",
         description: "Failed to upload images",
       });
-      console.log("Image upload error: ", error);
+      console.error("Image upload error:", error);
     }
-  };
-
-  const handleCategoryChange = (category: string) => {
-    methods.setValue("category", category);
   };
 
   return (
@@ -97,8 +87,8 @@ export default function NewProductForm() {
         >
           <ProductNameInput />
           <ProductDescriptionInput />
-          <ProductCategoryInput handleCategoryChange={handleCategoryChange} />
-          <ProductIngredientsInput handleCheckChange={handleCheckChange} />
+          <ProductCategoryInput />
+          <ProductIngredientsInput />
           <ProductPriceInput />
           <UploadNewImage />
           <UploadedImages />
