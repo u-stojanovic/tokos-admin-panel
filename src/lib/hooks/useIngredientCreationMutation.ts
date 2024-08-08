@@ -1,9 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  addIngredient,
-  getIngredients,
-} from "@/lib/actions/ingredientsActions";
+import { addIngredient } from "@/lib/actions/ingredientsActions";
 import { Ingredient } from "@prisma/client";
 
 export const useAddIngredientMutation = () => {

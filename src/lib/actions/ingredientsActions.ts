@@ -20,11 +20,28 @@ export async function addIngredient(data: {
   isAlergen: boolean;
 }): Promise<Ingredient> {
   try {
-    // NOTE: Check first if the ingredient exists
-    const newIngredient = await prisma.ingredient.create({
-      data,
+    console.log("data: ", data);
+    const foundIngredient = await prisma.ingredient.findFirst({
+      where: {
+        name: data.name,
+        isAlergen: data.isAlergen,
+      },
     });
-    return newIngredient;
+
+    console.log("foundIngredient: ", foundIngredient);
+
+    if (!foundIngredient) {
+      const newIngredient = await prisma.ingredient.create({
+        data: {
+          name: data.name,
+          isAlergen: data.isAlergen,
+        },
+      });
+      console.log("newIngredient: ", newIngredient);
+      return newIngredient;
+    }
+
+    return foundIngredient;
   } catch (error) {
     console.error("Error adding ingredient:", error);
     throw error;
