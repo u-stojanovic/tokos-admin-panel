@@ -1,14 +1,11 @@
 "use client";
 
 import React from "react";
-
 import { useForm, FormProvider, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-
 import { ProductNameInput } from "./components/ProductNameInput";
 import { ProductDescriptionInput } from "./components/ProductDescriptionInput";
 import { ProductCategoryInput } from "./components/ProductCategoryInput";
@@ -16,7 +13,6 @@ import { ProductIngredientsInput } from "./components/ProductIngredientsInput";
 import { ProductPriceInput } from "./components/ProductPriceInput";
 import { UploadedImages } from "./components/UploadedImages";
 import UploadNewImage from "./components/uploadImage";
-
 import { useProductCreationMutation } from "@/lib/hooks/useSubmitProductCreation";
 import { useImageUpload } from "@/context/ImageUploadContext";
 import { useSelectIngredients } from "@/context/ProductIngredientsSelectContext";
@@ -35,9 +31,10 @@ const productSchema = z.object({
       }),
     )
     .min(1, "At least one ingredient must be selected"),
+  images: z.array(z.string()),
 });
 
-type ProductFormInputs = z.infer<typeof productSchema>;
+export type ProductFormInputs = z.infer<typeof productSchema>;
 
 // Component for creating a new product
 export default function NewProductForm() {
@@ -47,12 +44,21 @@ export default function NewProductForm() {
 
   const methods = useForm<ProductFormInputs>({
     resolver: zodResolver(productSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      category: "",
+      price: 0,
+      addedIngredients: [],
+      images: [],
+    },
   });
 
   const { toast } = useToast();
 
   // Form submission handler
   const onSubmit: SubmitHandler<ProductFormInputs> = async (data) => {
+    console.log("Form Submitted", data); // Log to verify form submission
     if (addedIngredients.length === 0) {
       toast({
         title: "Error",

@@ -2,7 +2,9 @@
 import prisma from "../../../prisma/client";
 import { ProductWithRelations } from "..";
 import { Product } from "@prisma/client";
+import { ProductFormInputs } from "@/app/admin-panel/proizvodi/new/form";
 
+// Fetch total number of products
 export async function getTotalProducts() {
   try {
     const productCount = await prisma.product.aggregate({
@@ -17,6 +19,7 @@ export async function getTotalProducts() {
   }
 }
 
+// Fetch all products with related data
 export async function getProducts(): Promise<ProductWithRelations[]> {
   try {
     const products = await prisma.product.findMany({
@@ -35,6 +38,7 @@ export async function getProducts(): Promise<ProductWithRelations[]> {
   }
 }
 
+// Fetch product by ID with related data
 export async function getProductById(id: number) {
   try {
     const product = await prisma.product.findUnique({
@@ -57,6 +61,7 @@ export async function getProductById(id: number) {
   }
 }
 
+// Delete a product and related data
 export async function deleteProduct(productId: number) {
   try {
     await prisma.$transaction([
@@ -80,6 +85,7 @@ export async function deleteProduct(productId: number) {
   }
 }
 
+// Edit an existing product
 export async function submitEdit(
   productId: number,
   formValues: any,
@@ -112,22 +118,87 @@ export async function submitEdit(
   }
 }
 
-export async function submitCreate(formValues: any): Promise<Product> {
+// Create a new product if it doesn't exist, otherwise return the existing product
+export async function submitCreate(
+  formValues: ProductFormInputs,
+): Promise<Product> {
   try {
+    console.log(formValues);
+
+    // Check if category exists, otherwise create a new one
+    let categoryId: number;
     const foundCategory = await prisma.category.findFirst({
       where: { name: formValues.category },
     });
+    if (foundCategory) {
+      categoryId = foundCategory.id;
+    } else {
+      const newCategory = await prisma.category.create({
+        data: {
+          name: formValues.category,
+        },
+      });
+      categoryId = newCategory.id;
+    }
 
-    const categoryData = foundCategory
-      ? { connect: { id: foundCategory.id } }
-      : { create: { name: formValues.category } };
+    // if product with same data exists
+    const existingProduct = await prisma.product.findFirst({
+      where: {
+        name: formValues.name,
+        categoryId,
+        description: formValues.description,
+        price: formValues.price,
+      },
+    });
 
-    const newProduct = await prisma.product.findMany();
-    // FIX: Return the new created product
+    if (existingProduct) {
+      return existingProduct;
+    }
+
+    // Processing ingredients to get ids
+    const ingredientIds = await Promise.all(
+      formValues.addedIngredients.map(async (ingredient) => {
+        const foundIngredient = await prisma.ingredient.findFirst({
+          where: { name: ingredient.name },
+        });
+        if (foundIngredient) {
+          return foundIngredient.id;
+        } else {
+          const newIngredient = await prisma.ingredient.create({
+            data: {
+              name: ingredient.name,
+              isAlergen: ingredient.isAlergen,
+            },
+          });
+          return newIngredient.id;
+        }
+      }),
+    );
+
+    // Create new product with associated ingredients and images
+    const newProduct = await prisma.product.create({
+      data: {
+        name: formValues.name,
+        description: formValues.description,
+        categoryId: categoryId,
+        price: formValues.price,
+        ingredients: {
+          create: ingredientIds.map((ingredientId) => ({
+            ingredientId,
+          })),
+        },
+        images: {
+          create: formValues.images.map((image) => ({
+            imageUrl: image,
+          })),
+        },
+      },
+    });
+
     return newProduct;
   } catch (error) {
-    console.log("Error updating product: ", error);
-    throw new Error("Failed to update product");
+    console.log("Error creating product: ", error);
+    throw new Error("Failed to create product");
   } finally {
     await prisma.$disconnect();
   }

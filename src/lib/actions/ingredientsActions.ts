@@ -20,7 +20,6 @@ export async function addIngredient(data: {
   isAlergen: boolean;
 }): Promise<Ingredient> {
   try {
-    console.log("data: ", data);
     const foundIngredient = await prisma.ingredient.findFirst({
       where: {
         name: data.name,
