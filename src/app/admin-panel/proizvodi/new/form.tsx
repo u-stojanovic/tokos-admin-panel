@@ -17,7 +17,7 @@ import { useProductCreationMutation } from "@/lib/hooks/useSubmitProductCreation
 import { useImageUpload } from "@/context/ImageUploadContext";
 import { useSelectIngredients } from "@/context/ProductIngredientsSelectContext";
 
-// schema for product form validation
+// Schema for product form validation
 const productSchema = z.object({
   name: z.string().min(1, "Product name is required"),
   description: z.string().min(1, "Product description is required"),
@@ -42,6 +42,8 @@ export default function NewProductForm() {
   const mutation = useProductCreationMutation();
   const { addedIngredients } = useSelectIngredients();
 
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
   const methods = useForm<ProductFormInputs>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -58,23 +60,41 @@ export default function NewProductForm() {
 
   // Form submission handler
   const onSubmit: SubmitHandler<ProductFormInputs> = async (data) => {
-    console.log("Form Submitted", data); // Log to verify form submission
+    setIsLoading(true);
+
     if (addedIngredients.length === 0) {
       toast({
         title: "Error",
         description: "At least one ingredient must be selected",
       });
+      setIsLoading(false);
       return;
     }
 
     try {
       const imageUrls = await uploadImagesToFirebase();
-      mutation.mutate({
-        ...data,
-        images: imageUrls,
-        addedIngredients,
-      });
+      mutation.mutate(
+        {
+          ...data,
+          images: imageUrls,
+          addedIngredients,
+        },
+        {
+          onSuccess: () => {
+            setIsLoading(false);
+          },
+          onError: (error) => {
+            setIsLoading(false);
+            toast({
+              title: "Error",
+              description: "Failed to create product",
+            });
+            console.error("Mutation error:", error);
+          },
+        },
+      );
     } catch (error) {
+      setIsLoading(false);
       toast({
         title: "Error",
         description: "Failed to upload images",
@@ -83,13 +103,22 @@ export default function NewProductForm() {
     }
   };
 
+  const onError = (errors: any) => {
+    setIsLoading(false);
+    toast({
+      title: "Error",
+      description: "Please fix the highlighted errors and try again.",
+    });
+    console.error("Validation errors:", errors);
+  };
+
   return (
     <div className="grid gap-4">
       <h1 className="font-bold text-2xl sm:text-3xl">Create Product</h1>
       <FormProvider {...methods}>
         <form
           className="grid gap-4 md:gap-6"
-          onSubmit={methods.handleSubmit(onSubmit)}
+          onSubmit={methods.handleSubmit(onSubmit, onError)}
         >
           <ProductNameInput />
           <ProductDescriptionInput />
@@ -98,8 +127,12 @@ export default function NewProductForm() {
           <ProductPriceInput />
           <UploadNewImage />
           <UploadedImages />
-          <Button size="lg" type="submit" disabled={mutation.isPending}>
-            {mutation.isPending ? "Creating..." : "Create Product"}
+          <Button
+            size="lg"
+            type="submit"
+            disabled={mutation.isPending || isLoading}
+          >
+            {isLoading || mutation.isPending ? "Creating..." : "Create Product"}
           </Button>
         </form>
       </FormProvider>

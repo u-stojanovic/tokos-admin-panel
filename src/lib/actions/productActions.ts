@@ -123,8 +123,6 @@ export async function submitCreate(
   formValues: ProductFormInputs,
 ): Promise<Product> {
   try {
-    console.log(formValues);
-
     // Check if category exists, otherwise create a new one
     let categoryId: number;
     const foundCategory = await prisma.category.findFirst({
