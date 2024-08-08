@@ -107,7 +107,7 @@ export default function NewProductForm() {
     setIsLoading(false);
     toast({
       title: "Error",
-      description: "Please fix the highlighted errors and try again.",
+      description: "Please fill out all of the necessary inputs",
     });
     console.error("Validation errors:", errors);
   };
