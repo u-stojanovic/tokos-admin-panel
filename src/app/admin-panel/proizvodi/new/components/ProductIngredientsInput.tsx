@@ -14,6 +14,17 @@ import { useFetchIngredients } from "@/lib/hooks/useIngredientsFetch";
 import { useSelectIngredients } from "@/context/ProductIngredientsSelectContext";
 import { useFormContext } from "react-hook-form";
 
+// Skeleton loader component
+const IngredientSkeleton: React.FC = () => (
+  <div className="flex items-center justify-between py-2 border-b last:border-none animate-pulse">
+    <div className="flex items-center gap-2">
+      <div className="w-4 h-4 bg-gray-300 rounded"></div>
+      <div className="h-4 bg-gray-300 rounded w-24"></div>
+    </div>
+    <div className="h-4 bg-gray-300 rounded w-16"></div>
+  </div>
+);
+
 // Component for managing product ingredients:
 // fetching, displaying, and adding new ingredients
 export const ProductIngredientsInput: React.FC = () => {
@@ -59,7 +70,11 @@ export const ProductIngredientsInput: React.FC = () => {
         Product Ingredients
       </Label>
       {isLoading ? (
-        <div className="bg-white p-4 rounded-lg shadow">Loading...</div>
+        <div className="bg-white p-4 rounded-lg shadow">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <IngredientSkeleton key={index} />
+          ))}
+        </div>
       ) : (
         <div className="bg-white p-4 rounded-lg shadow">
           {ingredients &&
