@@ -17,6 +17,9 @@ import { useProductCreationMutation } from "@/lib/hooks/useSubmitProductCreation
 import { useImageUpload } from "@/context/ImageUploadContext";
 import { useSelectIngredients } from "@/context/ProductIngredientsSelectContext";
 
+import Link from "next/link";
+import { MdArrowBack } from "react-icons/md";
+
 // Schema for product form validation
 const productSchema = z.object({
   name: z.string().min(1, "Product name is required"),
@@ -114,6 +117,13 @@ export default function NewProductForm() {
 
   return (
     <div className="grid gap-4 max-w-4xl mx-auto py-6">
+      <Link
+        href="/proizvodi"
+        className="flex items-center text-blue-600 hover:underline mb-4"
+      >
+        <MdArrowBack className="mr-2" />
+        Idite nazad na listu proizvoda
+      </Link>
       <h1 className="font-bold text-2xl sm:text-3xl text-center">
         Create Product
       </h1>
