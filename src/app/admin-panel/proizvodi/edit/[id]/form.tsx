@@ -17,6 +17,8 @@ import { useImageUpload } from "@/context/ImageUploadContext";
 import { ProductNameInput } from "../../../../../components/admin/shared/form/ProductNameInput";
 import { ProductDescriptionInput } from "@/components/admin/shared/form/ProductDescriptionInput";
 import { ProductPriceInput } from "@/components/admin/shared/form/ProductPriceInput";
+import Link from "next/link";
+import { MdArrowBack } from "react-icons/md";
 
 // Define the schema
 const productSchema = z.object({
@@ -99,6 +101,13 @@ export default function EditProductForm({ product }: EditProductFormProps) {
 
   return (
     <div className="grid gap-4 max-w-4xl mx-auto py-6">
+      <Link
+        href="/proizvodi"
+        className="flex items-center text-blue-600 hover:underline mb-4"
+      >
+        <MdArrowBack className="mr-2" />
+        Idite nazad na listu proizvoda
+      </Link>
       <h1 className="font-bold text-2xl sm:text-3xl text-center">
         Edit Product
       </h1>
