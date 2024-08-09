@@ -28,11 +28,16 @@ export async function getProducts(): Promise<ProductWithRelations[]> {
     const products = await prisma.product.findMany({
       include: {
         images: true,
-        ingredients: true,
         category: true,
+        ingredients: {
+          include: {
+            ingredient: true,
+          },
+        },
       },
     });
-    return products;
+
+    return products as ProductWithRelations[];
   } catch (error) {
     console.log("error: ", error);
     return [];
@@ -91,24 +96,73 @@ export async function deleteProduct(productId: number) {
 // Edit an existing product
 export async function submitEdit(
   productId: number,
-  formValues: any,
+  formValues: ProductFormInputs,
 ): Promise<Product> {
   try {
+    // Check if the category exists, otherwise create a new one
+    let categoryId: number;
     const foundCategory = await prisma.category.findFirst({
       where: { name: formValues.category },
     });
 
-    const categoryData = foundCategory
-      ? { connect: { id: foundCategory.id } }
-      : { create: { name: formValues.category } };
+    if (foundCategory) {
+      categoryId = foundCategory.id;
+    } else {
+      const newCategory = await prisma.category.create({
+        data: { name: formValues.category },
+      });
+      categoryId = newCategory.id;
+    }
 
+    // Processing ingredients to get ids
+    const ingredientIds = await Promise.all(
+      formValues.addedIngredients.map(async (ingredient) => {
+        const foundIngredient = await prisma.ingredient.findFirst({
+          where: { name: ingredient.name },
+        });
+        if (foundIngredient) {
+          return foundIngredient.id;
+        } else {
+          const newIngredient = await prisma.ingredient.create({
+            data: {
+              name: ingredient.name,
+              isAlergen: ingredient.isAlergen,
+            },
+          });
+          return newIngredient.id;
+        }
+      }),
+    );
+
+    // Update the product with the new data
     const updatedProduct = await prisma.product.update({
       where: { id: productId },
       data: {
         name: formValues.name,
         description: formValues.description,
         price: formValues.price,
-        category: categoryData,
+        categoryId: categoryId,
+        ingredients: {
+          deleteMany: {}, // Remove all existing ingredients associations
+          create: ingredientIds.map((ingredientId) => ({
+            ingredientId,
+          })),
+        },
+        images: {
+          deleteMany: {}, // Remove all existing images
+          create: formValues.images.map((image) => ({
+            imageUrl: image,
+          })),
+        },
+      },
+      include: {
+        category: true,
+        ingredients: {
+          include: {
+            ingredient: true,
+          },
+        },
+        images: true,
       },
     });
 

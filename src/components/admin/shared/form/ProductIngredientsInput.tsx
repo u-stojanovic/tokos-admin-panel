@@ -28,7 +28,8 @@ const IngredientSkeleton: React.FC = () => (
 // Component for managing product ingredients:
 // fetching, displaying, and adding new ingredients
 export const ProductIngredientsInput: React.FC = () => {
-  const { addIngredient, removeIngredient } = useSelectIngredients();
+  const { addedIngredients, addIngredient, removeIngredient } =
+    useSelectIngredients();
   const { data: ingredients, isLoading } = useFetchIngredients();
   const { mutate: createNewIngredient, isPending } =
     useCreateNewIngredientMutation();
@@ -45,6 +46,13 @@ export const ProductIngredientsInput: React.FC = () => {
       setIsAlergen(false);
     }
   };
+
+  React.useEffect(() => {
+    const defaultIngredients = getValues("addedIngredients") || [];
+    defaultIngredients.forEach((ingredient: Ingredient) => {
+      addIngredient(ingredient.name, ingredient.isAlergen);
+    });
+  }, []);
 
   // Handler for checkbox state change
   const handleCheckChange = (checked: CheckedState, ingredient: Ingredient) => {
@@ -79,24 +87,31 @@ export const ProductIngredientsInput: React.FC = () => {
         <div className="bg-white p-4 rounded-lg shadow">
           {ingredients &&
             ingredients.length > 0 &&
-            ingredients.map((ingredient: Ingredient) => (
-              <div
-                key={ingredient.id}
-                className="flex items-center justify-between py-2 border-b last:border-none"
-              >
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    onCheckedChange={(checked) =>
-                      handleCheckChange(checked, ingredient)
-                    }
-                  />
-                  <span className="text-base">{ingredient.name}</span>
+            ingredients.map((ingredient: Ingredient) => {
+              const isChecked = addedIngredients.some(
+                (addedIngredient) => addedIngredient.name === ingredient.name,
+              );
+
+              return (
+                <div
+                  key={ingredient.id}
+                  className="flex items-center justify-between py-2 border-b last:border-none"
+                >
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={isChecked}
+                      onCheckedChange={(checked) =>
+                        handleCheckChange(checked, ingredient)
+                      }
+                    />
+                    <span className="text-base">{ingredient.name}</span>
+                  </div>
+                  {ingredient.isAlergen && (
+                    <p className="text-red-600 text-sm">- Alergen</p>
+                  )}
                 </div>
-                {ingredient.isAlergen && (
-                  <p className="text-red-600 text-sm">- Alergen</p>
-                )}
-              </div>
-            ))}
+              );
+            })}
         </div>
       )}
       <div className="flex flex-col gap-2 bg-white p-4 rounded-lg shadow mt-4">

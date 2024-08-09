@@ -1,25 +1,25 @@
 "use client";
 
+import React from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, EffectFade, Thumbs } from "swiper/modules";
+import Image from "next/image";
+import { Product } from "@/lib";
+import Link from "next/link";
+import { MdArrowBack } from "react-icons/md";
+
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 import "swiper/css/thumbs";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, EffectFade, Thumbs } from "swiper/modules";
-import Image from "next/image";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Product } from "@/lib";
-import Link from "next/link";
-import { MdArrowBack } from "react-icons/md";
 
 interface ProductPageProps {
   product: Product;
 }
 
 export default function ProductDetails({ product }: ProductPageProps) {
-  const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
+  const [thumbsSwiper, setThumbsSwiper] = React.useState<any>(null);
 
   return (
     <div className="max-w-7xl mx-auto py-10 px-6">
