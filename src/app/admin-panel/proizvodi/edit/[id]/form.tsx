@@ -5,8 +5,6 @@ import { useForm, FormProvider, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { CategoriesComboBox } from "@/components/ui/categories_combobox";
 import { Product } from "@/lib";
@@ -54,14 +52,13 @@ export default function EditProductForm({ product }: EditProductFormProps) {
       description: product.description,
       category: product.category.name,
       price: product.price || 0,
-      addedIngredients: product.ingredients.map((ing) => ({
-        name: ing.name,
-        isAlergen: ing.isAlergen,
+      addedIngredients: product.ingredients.map((prodIng) => ({
+        name: prodIng.ingredient.name,
+        isAlergen: prodIng.ingredient.isAlergen,
       })),
       images: product.images.map((image) => image.imageUrl),
     },
   });
-
   const {
     formState: { errors },
     setValue,
