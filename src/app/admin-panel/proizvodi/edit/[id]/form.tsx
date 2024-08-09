@@ -1,26 +1,40 @@
 "use client";
 
 import React from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, FormProvider, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useToast } from "@/components/ui/use-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
-import { submitEdit } from "@/lib/actions/productActions";
-
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { CategoriesComboBox } from "@/components/ui/categories_combobox";
 import { Product } from "@/lib";
-import ProductImages from "./uploadImage";
+import UploadNewImage from "../../new/components/uploadImage";
+import { UploadedImages } from "../../new/components/UploadedImages";
+import { ProductIngredientsInput } from "../../../../../components/admin/shared/form/ProductIngredientsInput";
+import { EditProductImages } from "./components/EditProductImages";
+import { useUpdateProduct } from "@/lib/hooks/useUpdateProduct";
+import { useImageUpload } from "@/context/ImageUploadContext";
+import { ProductNameInput } from "../../../../../components/admin/shared/form/ProductNameInput";
+import { ProductDescriptionInput } from "@/components/admin/shared/form/ProductDescriptionInput";
+import { ProductPriceInput } from "@/components/admin/shared/form/ProductPriceInput";
 
+// Define the schema
 const productSchema = z.object({
   name: z.string().min(1, "Product name is required"),
   description: z.string().min(1, "Product description is required"),
   category: z.string().min(1, "Product category is required"),
   price: z.number().min(0, "Product price must be a positive number"),
+  addedIngredients: z
+    .array(
+      z.object({
+        name: z.string(),
+        isAlergen: z.boolean(),
+      }),
+    )
+    .min(1, "At least one ingredient must be selected"),
+  images: z.array(z.string()),
 });
 
 type ProductFormInputs = z.infer<typeof productSchema>;
@@ -30,44 +44,56 @@ interface EditProductFormProps {
 }
 
 export default function EditProductForm({ product }: EditProductFormProps) {
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const { images, uploadImagesToFirebase } = useImageUpload();
 
-  const mutation = useMutation({
-    mutationFn: (data: ProductFormInputs) => submitEdit(product.id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["products"] });
-      toast({
-        title: "Product Updated",
-        description: "Product Successfully updated",
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: "Failed to update product",
-      });
-      console.log("error: ", error);
-    },
-  });
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-  } = useForm<ProductFormInputs>({
+  const methods = useForm<ProductFormInputs>({
     resolver: zodResolver(productSchema),
     defaultValues: {
       name: product.name,
       description: product.description,
       category: product.category.name,
       price: product.price || 0,
+      addedIngredients: product.ingredients.map((ing) => ({
+        name: ing.name,
+        isAlergen: ing.isAlergen,
+      })),
+      images: product.images.map((image) => image.imageUrl),
     },
   });
 
-  const onSubmit: SubmitHandler<ProductFormInputs> = (data) => {
-    mutation.mutate(data);
+  const {
+    formState: { errors },
+    setValue,
+  } = methods;
+
+  const updateProductMutation = useUpdateProduct({ productId: product.id });
+
+  const onSubmit: SubmitHandler<ProductFormInputs> = async (data) => {
+    try {
+      setIsLoading(true);
+
+      let newImageUrls: string[] = [];
+      if (images.length > 0) {
+        newImageUrls = await uploadImagesToFirebase();
+      }
+
+      const allImageUrls: string[] = [...data.images, ...newImageUrls];
+
+      updateProductMutation.mutate({
+        ...data,
+        images: allImageUrls,
+      });
+    } catch (error) {
+      console.error("Failed to update product:", error);
+      setIsLoading(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onError = (errors: any) => {
+    console.error("Validation errors:", errors);
   };
 
   const handleCategoryChange = (category: string) => {
@@ -75,71 +101,52 @@ export default function EditProductForm({ product }: EditProductFormProps) {
   };
 
   return (
-    <div className="grid gap-4">
-      <h1 className="font-bold text-2xl sm:text-3xl">Edit Product</h1>
-      <form className="grid gap-4 md:gap-6" onSubmit={handleSubmit(onSubmit)}>
-        <div className="grid gap-2">
-          <Label htmlFor="productName" className="text-base">
-            Product Name
-          </Label>
-          <Input
-            id="productName"
-            {...register("name")}
-            placeholder="Enter product name"
-          />
-          {errors.name && (
-            <span className="text-red-600">{errors.name.message}</span>
-          )}
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="productDescription" className="text-base">
-            Product Description
-          </Label>
-          <Textarea
-            id="productDescription"
-            {...register("description")}
-            placeholder="Enter product description"
-          />
-          {errors.description && (
-            <span className="text-red-600">{errors.description.message}</span>
-          )}
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="productCategory" className="text-base">
-            Product Category
-          </Label>
-          <CategoriesComboBox
-            currCategory={product.category.name}
-            onChange={handleCategoryChange}
-          />
-          {errors.category && (
-            <span className="text-red-600">{errors.category.message}</span>
-          )}
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="productPrice" className="text-base">
-            Product Price
-          </Label>
-          <Input
-            id="productPrice"
-            type="number"
-            {...register("price", { valueAsNumber: true })}
-            placeholder="Enter product price"
-          />
-          {errors.price && (
-            <span className="text-red-600">{errors.price.message}</span>
-          )}
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="productImages" className="text-base">
-            Product Images
-          </Label>
-          <ProductImages product={product} />
-        </div>
-        <Button size="lg" type="submit" disabled={mutation.isPending}>
-          {mutation.isPending ? "Updating..." : "Edit Product"}
-        </Button>
-      </form>
+    <div className="grid gap-4 max-w-4xl mx-auto py-6">
+      <h1 className="font-bold text-2xl sm:text-3xl text-center">
+        Edit Product
+      </h1>
+      <FormProvider {...methods}>
+        <form
+          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          onSubmit={methods.handleSubmit(onSubmit, onError)}
+        >
+          <div className="flex flex-col gap-6">
+            <ProductNameInput />
+            <ProductDescriptionInput />
+            <div className="grid gap-2">
+              <Label
+                htmlFor="productCategory"
+                className="text-base font-semibold"
+              >
+                Product Category
+              </Label>
+              <CategoriesComboBox
+                currCategory={product.category.name}
+                onChange={handleCategoryChange}
+              />
+              {errors.category && (
+                <span className="text-red-600">{errors.category.message}</span>
+              )}
+            </div>
+            <ProductPriceInput />
+            <EditProductImages product={product} />
+            <UploadNewImage />
+            <Button
+              size="lg"
+              type="submit"
+              disabled={updateProductMutation.isPending || isLoading}
+            >
+              {updateProductMutation.isPending || isLoading
+                ? "Updating..."
+                : "Update Product"}
+            </Button>
+          </div>
+          <div className="flex flex-col gap-6">
+            <ProductIngredientsInput />
+            <UploadedImages />
+          </div>
+        </form>
+      </FormProvider>
     </div>
   );
 }

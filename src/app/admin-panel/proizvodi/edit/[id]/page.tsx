@@ -19,7 +19,7 @@ export default async function ProductEditSlug({
   }
 
   return (
-    <div className="grid md:grid-cols-2 gap-6 lg:gap-12 items-start max-w-6xl px-4 mx-auto py-6">
+    <div className="flex justify-center items-center min-h-screen">
       <EditProductForm product={product} />
     </div>
   );

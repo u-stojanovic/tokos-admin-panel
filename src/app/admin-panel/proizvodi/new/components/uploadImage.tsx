@@ -6,7 +6,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useImageUpload } from "@/context/ImageUploadContext";
 
-export default function UploadNewImage() {
+// NOTE:
+// Interface for passing the existing images for editing
+interface ImagesForEditProps {
+  existingImageUrls?: string[] | undefined;
+}
+
+export default function UploadNewImage({
+  existingImageUrls,
+}: ImagesForEditProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const { addImage } = useImageUpload();
   const [imageUrl, setImageUrl] = useState("");
