@@ -51,6 +51,7 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
           </span>
         </Link>
         <Link
+          prefetch={true}
           className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/admin-panel/porudzbine")}`}
           href="/admin-panel/porudzbine"
         >
@@ -60,6 +61,7 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
           </span>
         </Link>
         <Link
+          prefetch={true}
           className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/proizvodi")}`}
           href="/proizvodi"
         >
@@ -98,6 +100,7 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
           </span>
         </Link>
         <Link
+          prefetch={true}
           className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/admin-panel/users")}`}
           href="/admin-panel/users"
         >

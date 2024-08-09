@@ -18,7 +18,7 @@ export default function ProductCard({ product, user }: ProductCardProps) {
       key={product.id}
       className="bg-white dark:bg-gray-900 rounded-lg shadow p-6"
     >
-      <Link href={`/proizvodi/${product.id}`}>
+      <Link prefetch={true} href={`/proizvodi/${product.id}`}>
         <Image
           src={
             product.images.length > 0
@@ -42,7 +42,10 @@ export default function ProductCard({ product, user }: ProductCardProps) {
         </span>
         {user.role == UserRoles.HeadAdmin && (
           <div className="flex space-x-2">
-            <Link href={`/admin-panel/proizvodi/edit/${product.id}`}>
+            <Link
+              prefetch={true}
+              href={`/admin-panel/proizvodi/edit/${product.id}`}
+            >
               <Button className="text-indigo-300 hover:text-indigo-50">
                 Edit
               </Button>
