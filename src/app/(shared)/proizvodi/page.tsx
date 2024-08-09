@@ -22,10 +22,10 @@ export default function Proizvodi() {
 
   if (isLoadingProducts || isLoadingUser)
     return (
-      <div className="flex h-screen bg-gray-100 dark:bg-gray-800">
-        <section className="mb-8">
+      <div className="flex h-screen bg-gray-100 dark:bg-gray-800 max-w-6xl mx-auto">
+        <section className="mb-8 w-full">
           <h2 className="text-2xl font-bold mb-4 dark:text-white">Products</h2>
-          <div className="grid grid-cols-3 gap-6 w-screen">
+          <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
             {Array.from({ length: 6 }).map((_, index) => (
               <ProductSkeleton key={index} />
             ))}
