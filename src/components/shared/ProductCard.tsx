@@ -38,7 +38,7 @@ export default function ProductCard({ product, user }: ProductCardProps) {
       </p>
       <div className="flex justify-between items-center">
         <span className="text-indigo-500 font-bold">
-          {product.price ? `$${product.price}` : "N/A"}
+          {product.price ? `${product.price} RSD` : "N/A"}
         </span>
         {user.role == UserRoles.HeadAdmin && (
           <div className="flex space-x-2">
