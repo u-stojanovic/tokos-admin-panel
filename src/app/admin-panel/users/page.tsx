@@ -37,7 +37,7 @@ export default function Users() {
 
   return (
     <div className="flex flex-col w-full px-4 py-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center gap-2 mb-6">
         <div className="w-full max-w-md relative">
           <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
           <Input
