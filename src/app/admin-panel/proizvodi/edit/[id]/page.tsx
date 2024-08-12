@@ -1,12 +1,20 @@
-import { getProductById } from "@/lib/actions/productActions";
-import EditProductForm from "./form";
+"use client";
 
-export default async function ProductEditSlug({
+import EditProductForm from "./form";
+import { useGetProductById } from "@/lib/hooks/useGetProductById";
+import EditProductSkeletonLoader from "./components/SkeletonLoader";
+import { Product } from "@/lib";
+
+export default function ProductEditSlug({
   params,
 }: {
   params: { id: number };
 }) {
-  const product = await getProductById(params.id);
+  const { data: product, isLoading } = useGetProductById(params.id as number);
+
+  if (isLoading) {
+    return <EditProductSkeletonLoader />;
+  }
 
   if (!product) {
     return (
@@ -20,7 +28,7 @@ export default async function ProductEditSlug({
 
   return (
     <div className="flex justify-center items-center min-h-screen">
-      <EditProductForm product={product} />
+      <EditProductForm product={product as Product} />
     </div>
   );
 }

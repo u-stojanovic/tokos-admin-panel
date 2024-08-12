@@ -16,6 +16,13 @@ export const EditProductImages: React.FC<EditProductImagesProps> = ({
   product,
 }) => {
   const [thumbsSwiper, setThumbsSwiper] = React.useState<any>(null);
+  const [images, setImages] = React.useState(product.images);
+
+  const handleImageDelete = (url: string) => {
+    setImages((prevImages) =>
+      prevImages.filter((image) => image.imageUrl !== url),
+    );
+  };
 
   return (
     <div className="p-4 bg-white rounded-lg shadow-md space-y-6">
@@ -32,7 +39,7 @@ export const EditProductImages: React.FC<EditProductImagesProps> = ({
           thumbs={{ swiper: thumbsSwiper }}
           className="w-full h-auto rounded-lg shadow-md"
         >
-          {product.images.map((image, index) => (
+          {images.map((image, index) => (
             <SwiperSlide
               key={index}
               className="flex justify-center items-center relative"
@@ -45,7 +52,11 @@ export const EditProductImages: React.FC<EditProductImagesProps> = ({
                 height={1000}
                 className="object-cover rounded-lg"
               />
-              <DeleteImage url={image.imageUrl} />{" "}
+              <DeleteImage
+                id={product.id}
+                url={image.imageUrl}
+                onDelete={handleImageDelete}
+              />
             </SwiperSlide>
           ))}
         </Swiper>
@@ -57,7 +68,7 @@ export const EditProductImages: React.FC<EditProductImagesProps> = ({
           watchSlidesProgress
           className="w-full h-auto rounded-lg shadow-md"
         >
-          {product.images.map((image, index) => (
+          {images.map((image, index) => (
             <SwiperSlide key={index} className="cursor-pointer relative">
               <Image
                 src={image.imageUrl}

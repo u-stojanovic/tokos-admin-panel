@@ -1,4 +1,5 @@
 "use server";
+
 import prisma from "../../../prisma/client";
 import { ProductWithRelations } from "..";
 import { Product } from "@prisma/client";

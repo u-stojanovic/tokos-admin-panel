@@ -10,12 +10,22 @@ export const useCreateNewIngredientMutation = () => {
   return useMutation({
     mutationFn: (data: { name: string; isAlergen: boolean }) =>
       addIngredient(data),
-    onSuccess: (newIngredient: Ingredient) => {
-      queryClient.invalidateQueries({ queryKey: ["ingredients"] });
-      toast({
-        title: "Success",
-        description: `Ingredient ${newIngredient.name} added successfully`,
-      });
+    onSuccess: (result: Ingredient | string) => {
+      if (
+        typeof result === "string" &&
+        result === "Ingredient Already Exists"
+      ) {
+        toast({
+          title: "Warning",
+          description: "Ingredient already exists",
+        });
+      } else {
+        queryClient.invalidateQueries({ queryKey: ["ingredients"] });
+        toast({
+          title: "Success",
+          description: `Ingredient ${(result as Ingredient).name} added successfully`,
+        });
+      }
     },
     onError: (error: any) => {
       toast({

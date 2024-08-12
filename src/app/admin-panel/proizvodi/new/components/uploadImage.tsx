@@ -1,23 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useImageUpload } from "@/context/ImageUploadContext";
 
-// NOTE:
-// Interface for passing the existing images for editing
-interface ImagesForEditProps {
-  existingImageUrls?: string[] | undefined;
-}
-
-export default function UploadNewImage({
-  existingImageUrls,
-}: ImagesForEditProps) {
+export default function UploadNewImage() {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const { addImage } = useImageUpload();
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrl, setImageUrl] = React.useState("");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -33,15 +25,15 @@ export default function UploadNewImage({
     }
   };
 
-  const handleUrlUpload = () => {
-    if (imageUrl) {
-      addImage(imageUrl, imageUrl);
-      setImageUrl("");
-    } else {
-      console.log("No URL provided");
-    }
-  };
-
+  // const handleUrlUpload = () => {
+  //   if (imageUrl) {
+  //     addImage(imageUrl, imageUrl);
+  //     setImageUrl("");
+  //   } else {
+  //     console.log("No URL provided");
+  //   }
+  // };
+  //
   return (
     <div className="flex flex-col gap-2">
       <Label htmlFor="uploadImage" className="text-base">
@@ -59,17 +51,17 @@ export default function UploadNewImage({
           Upload
         </Button>
       </div>
-      <div className="flex gap-2">
-        <Input
-          type="text"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          placeholder="Enter image URL"
-        />
-        <Button type="button" onClick={handleUrlUpload}>
-          Upload from URL
-        </Button>
-      </div>
+      {/* <div className="flex gap-2"> */}
+      {/*   <Input */}
+      {/*     type="text" */}
+      {/*     value={imageUrl} */}
+      {/*     onChange={(e) => setImageUrl(e.target.value)} */}
+      {/*     placeholder="Enter image URL" */}
+      {/*   /> */}
+      {/*   <Button type="button" onClick={handleUrlUpload}> */}
+      {/*     Upload from URL */}
+      {/*   </Button> */}
+      {/* </div> */}
     </div>
   );
 }

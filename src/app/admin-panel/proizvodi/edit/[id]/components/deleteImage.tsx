@@ -17,20 +17,29 @@ import { useImageUpload } from "@/context/ImageUploadContext";
 import { FaTrash } from "react-icons/fa";
 
 interface DeleteImageProps {
+  id: number;
   url: string;
+  onDelete: (url: string) => void;
 }
 
-export function DeleteImage({ url }: DeleteImageProps) {
+export function DeleteImage({ id, url, onDelete }: DeleteImageProps) {
   const queryClient = useQueryClient();
   const { deleteImage } = useImageUpload();
 
   const mutation = useMutation({
     mutationFn: () => deleteImage(url),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["products"] });
+      console.log("Image deletion successful, invalidating queries...");
+      onDelete(url);
+      queryClient.invalidateQueries({
+        queryKey: ["getProduct", id],
+      });
     },
     onError: (error) => {
       console.error("Failed to delete the image:", error);
+      queryClient.invalidateQueries({
+        queryKey: ["getProduct", id],
+      });
     },
   });
 
