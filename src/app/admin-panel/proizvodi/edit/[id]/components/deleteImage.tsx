@@ -29,7 +29,6 @@ export function DeleteImage({ id, url, onDelete }: DeleteImageProps) {
   const mutation = useMutation({
     mutationFn: () => deleteImage(url),
     onSuccess: () => {
-      console.log("Image deletion successful, invalidating queries...");
       onDelete(url);
       queryClient.invalidateQueries({
         queryKey: ["getProduct", id],
