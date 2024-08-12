@@ -87,7 +87,7 @@ export default function ProductDetails({ product }: ProductPageProps) {
             {product.description}
           </div>
           <div className="text-3xl font-bold text-lightMode-text dark:text-darkMode-text">
-            ${product.price ? product.price : 20}
+            {product.price ? product.price : "N/A"} RSD
           </div>
           <div>
             <h2 className="text-2xl font-semibold text-lightMode-text dark:text-darkMode-text">

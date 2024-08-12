@@ -58,7 +58,7 @@ export const ImageUploadProvider: React.FC<{ children: React.ReactNode }> = ({
     const uploadPromises = images.map(async (img) => {
       if ("file" in img && typeof img.file !== "string") {
         const options = {
-          maxSizeMB: 0.5,
+          maxSizeMB: 0.8,
           maxWidthOrHeight: 800,
           useWebWorker: true,
         };
