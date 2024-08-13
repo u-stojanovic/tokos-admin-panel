@@ -12,7 +12,7 @@ import UploadNewImage from "../../new/components/uploadImage";
 import { UploadedImages } from "../../new/components/UploadedImages";
 import { ProductIngredientsInput } from "../../../../../components/admin/shared/form/ProductIngredientsInput";
 import { EditProductImages } from "./components/EditProductImages";
-import { useUpdateProduct } from "@/lib/hooks/useUpdateProduct";
+import { useUpdateProduct } from "@/lib/hooks/product/useUpdateProduct";
 import { useImageUpload } from "@/context/ImageUploadContext";
 import { ProductNameInput } from "../../../../../components/admin/shared/form/ProductNameInput";
 import { ProductDescriptionInput } from "@/components/admin/shared/form/ProductDescriptionInput";

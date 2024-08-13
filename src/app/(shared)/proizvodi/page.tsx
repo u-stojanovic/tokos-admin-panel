@@ -4,8 +4,8 @@ import Link from "next/link";
 import ProductCard from "@/components/shared/ProductCard";
 import ProductSkeleton from "@/components/shared/ProductSkeleton";
 import { Button } from "@/components/ui/button";
-import { useUserAndRole } from "@/lib/hooks/useUserAndRole";
-import { useFetchProducts } from "@/lib/hooks/useFetchProducts";
+import { useUserAndRole } from "@/lib/hooks/user/useUserAndRole";
+import { useFetchProducts } from "@/lib/hooks/product/useFetchProducts";
 import { UserRoles } from "@prisma/client";
 
 export default function Proizvodi() {

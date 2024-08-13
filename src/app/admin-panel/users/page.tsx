@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SearchIcon } from "lucide-react";
 import Link from "next/link";
-import { useUsers } from "@/lib/hooks/useUsers";
+import { useUsers } from "@/lib/hooks/user/useUsers";
 import UserCard from "./UserCard";
 import { User } from "@prisma/client";
 

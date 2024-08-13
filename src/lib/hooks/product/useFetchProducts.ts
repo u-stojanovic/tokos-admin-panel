@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { getProducts } from "../actions/productActions";
-import { ProductWithRelations } from "..";
+import { getProducts } from "../../actions/productActions";
+import { ProductWithRelations } from "../..";
 
 const fetchProducts = async (): Promise<ProductWithRelations[]> => {
   return await getProducts();

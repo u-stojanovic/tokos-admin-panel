@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getIngredients } from "../actions/ingredientsActions";
+import { getIngredients } from "../../actions/ingredientsActions";
 
 const fetchIngridients = async () => {
   const ingredients = await getIngredients();

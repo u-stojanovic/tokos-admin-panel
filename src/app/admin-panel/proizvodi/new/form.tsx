@@ -13,7 +13,7 @@ import { ProductIngredientsInput } from "../../../../components/admin/shared/for
 import { ProductPriceInput } from "../../../../components/admin/shared/form/ProductPriceInput";
 import { UploadedImages } from "./components/UploadedImages";
 import UploadNewImage from "./components/uploadImage";
-import { useProductCreationMutation } from "@/lib/hooks/useSubmitProductCreation";
+import { useProductCreationMutation } from "@/lib/hooks/product/useSubmitProductCreation";
 import { useImageUpload } from "@/context/ImageUploadContext";
 import { useSelectIngredients } from "@/context/ProductIngredientsSelectContext";
 
