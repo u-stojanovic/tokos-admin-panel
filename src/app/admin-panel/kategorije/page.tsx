@@ -1,6 +1,6 @@
 "use client";
 
-import { useFetchCategories } from "@/lib/hooks/useFetchCategories";
+import { useFetchCategories } from "@/lib/hooks/category/useFetchCategories";
 import ListCategories from "./ListCategories";
 import ListCategoriesSkeleton from "./ListCategoriesSkeleton";
 

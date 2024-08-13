@@ -1,7 +1,7 @@
 "use client";
 
 import EditProductForm from "./form";
-import { useGetProductById } from "@/lib/hooks/useGetProductById";
+import { useGetProductById } from "@/lib/hooks/product/useGetProductById";
 import EditProductSkeletonLoader from "./components/SkeletonLoader";
 import { Product } from "@/lib";
 

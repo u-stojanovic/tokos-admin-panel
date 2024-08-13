@@ -9,8 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CheckedState } from "@radix-ui/react-checkbox";
 
-import { useCreateNewIngredientMutation } from "@/lib/hooks/useIngredientCreationMutation";
-import { useFetchIngredients } from "@/lib/hooks/useIngredientsFetch";
+import { useCreateNewIngredientMutation } from "@/lib/hooks/ingredient/useIngredientCreationMutation";
+import { useFetchIngredients } from "@/lib/hooks/ingredient/useIngredientsFetch";
 import { useSelectIngredients } from "@/context/ProductIngredientsSelectContext";
 import { useFormContext } from "react-hook-form";
 

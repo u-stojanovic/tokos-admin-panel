@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getProductById } from "../actions/productActions";
+import { getProductById } from "../../actions/productActions";
 
 const getProduct = async (id: number) => {
   const users = await getProductById(id);
