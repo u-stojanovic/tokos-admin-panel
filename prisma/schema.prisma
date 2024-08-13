@@ -37,20 +37,31 @@ model VerificationToken {
 }
 
 model Product {
-  id          Int                 @id @default(autoincrement())
-  name        String
-  description String
-  categoryId  Int
-  price       Int?
-  images      Image[]
-  category    Category            @relation(fields: [categoryId], references: [id])
-  ingredients ProductIngredient[]
+  id            Int                 @id @default(autoincrement())
+  name          String
+  description   String
+  categoryId    Int
+  subCategoryId Int?
+  price         Int?
+  images        Image[]
+  category      Category            @relation(fields: [categoryId], references: [id])
+  ingredients   ProductIngredient[]
+  SubCategory   SubCategory?        @relation(fields: [subCategoryId], references: [id])
 }
 
 model Category {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
-  products Product[]
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  subCategory SubCategory[]
+  products    Product[]
+}
+
+model SubCategory {
+  id         Int       @id @default(autoincrement())
+  name       String
+  category   Category  @relation(fields: [categoryId], references: [id])
+  categoryId Int
+  products   Product[]
 }
 
 model Ingredient {

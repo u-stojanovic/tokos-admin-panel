@@ -43,9 +43,15 @@ export default function Proizvodi() {
         <div className="flex items-center text-center justify-between mb-4">
           <h2 className="text-2xl font-bold dark:text-white">Products</h2>
           {user && user.role == UserRoles.HeadAdmin && (
-            <Link href="/admin-panel/proizvodi/new">
-              <Button className="ml-auto">Create Product</Button>
-            </Link>
+            <div className="flex gap-2">
+              <Link href="/admin-panel/proizvodi/new">
+                <Button className="ml-auto">Create Product</Button>
+              </Link>
+
+              <Link href="/admin-panel/kategorije">
+                <Button className="ml-auto">Categories</Button>
+              </Link>
+            </div>
           )}
         </div>
         <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
