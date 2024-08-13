@@ -28,7 +28,7 @@ export default function ProductEditSlug({
 
   return (
     <div className="flex justify-center items-center min-h-screen">
-      <EditProductForm product={product as Product} />
+      <EditProductForm product={product as any} />
     </div>
   );
 }

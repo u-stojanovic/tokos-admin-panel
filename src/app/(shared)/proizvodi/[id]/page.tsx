@@ -1,12 +1,15 @@
-import { getProductById } from "@/lib/actions/productActions";
-import ProductDetails from "./ProductDetails";
+"use client";
 
-export default async function ProductSlug({
-  params,
-}: {
-  params: { id: number };
-}) {
-  const product = await getProductById(params.id);
+import ProductDetails from "./ProductDetails";
+import ProductDetailsSkeleton from "./ProductDetailsSkeleton";
+import { useGetProductById } from "@/lib/hooks/product/useGetProductById";
+
+export default function ProductSlug({ params }: { params: { id: number } }) {
+  const { data: product, isLoading, error } = useGetProductById(params.id);
+
+  if (isLoading) {
+    return <ProductDetailsSkeleton />;
+  }
 
   if (!product) {
     return (
@@ -23,7 +26,7 @@ export default async function ProductSlug({
       <div className="inline-block rounded-lg bg-lightMode-primary px-3 py-1 text-sm dark:bg-darkMode-primary text-lightMode-text">
         {product.name}
       </div>
-      <ProductDetails product={product} />
+      <ProductDetails product={product as any} />
     </div>
   );
 }

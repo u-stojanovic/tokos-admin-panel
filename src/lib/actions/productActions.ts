@@ -62,9 +62,11 @@ export async function getProductById(id: number) {
         },
       },
     });
-    return product;
+
+    return product || null;
   } catch (error) {
     console.log("error: ", error);
+    return null;
   } finally {
     await prisma.$disconnect();
   }
