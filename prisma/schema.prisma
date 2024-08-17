@@ -69,27 +69,37 @@ model Product {
 }
 
 model Order {
-  id              Int              @id @default(autoincrement())
-  description     String
-  orderedBy       String
-  orderedProducts OrderedProduct[]
-  isOrderVerified Boolean
-  status          OrderStatus
-  completedBy     User?            @relation(fields: [userId], references: [id])
-  userId          Int?
-  orderDateTime   DateTime
-  createdAt       DateTime         @default(now())
+  id                         Int                       @id @default(autoincrement())
+  orderedBy                  String
+  orderedProducts            OrderedProduct[]
+  orderDeliveryInformationId Int?
+  OrderDeliveryInformation   OrderDeliveryInformation? @relation(fields: [orderDeliveryInformationId], references: [id])
+  isOrderVerified            Boolean
+  status                     OrderStatus
+  completedBy                User?                     @relation(fields: [userId], references: [id])
+  userId                     Int?
+  orderDateTime              DateTime
+  createdAt                  DateTime                  @default(now())
+}
+
+model OrderDeliveryInformation {
+  id     Int     @id @default(autoincrement())
+  city   String?
+  adresa String?
+  zip    String?
+  Order  Order[]
 }
 
 model OrderedProduct {
-  id        Int     @id @default(autoincrement())
-  product   Product @relation(fields: [productId], references: [id])
-  productId Int
-  order     Order   @relation(fields: [orderId], references: [id])
-  orderId   Int
-  option    Option?
-  optionId  Int?    @unique
-  quantity  Int     @default(1)
+  id          Int     @id @default(autoincrement())
+  product     Product @relation(fields: [productId], references: [id])
+  productId   Int
+  order       Order   @relation(fields: [orderId], references: [id])
+  orderId     Int
+  description String?
+  option      Option?
+  optionId    Int?    @unique
+  quantity    Int     @default(1)
 }
 
 model Option {
