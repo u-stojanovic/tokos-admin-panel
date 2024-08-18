@@ -17,7 +17,7 @@ enum UserRoles {
 enum OrderStatus {
   Ordered
   Completed
-  In_Progress
+  Pending
   Canceled
 }
 
@@ -28,6 +28,7 @@ enum CakeSize {
 
 enum CookieSize {
   ONE_KG
+  TWO_KG
   THREE_KG
 }
 
@@ -78,7 +79,7 @@ model Order {
   status                     OrderStatus
   completedBy                User?                     @relation(fields: [userId], references: [id])
   userId                     Int?
-  orderDateTime              DateTime
+  orderDateTime              DateTime?
   createdAt                  DateTime                  @default(now())
 }
 
