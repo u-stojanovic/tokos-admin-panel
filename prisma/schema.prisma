@@ -8,51 +8,27 @@ datasource db {
   directUrl = env("DIRECT_DATABASE_URL")
 }
 
-enum UserRoles {
-  HeadAdmin
-  Worker
-  None
-}
-
-enum OrderStatus {
-  Ordered
-  Completed
-  Pending
-  Canceled
-}
-
-enum CakeSize {
-  BIG
-  SMALL
-}
-
-enum CookieSize {
-  ONE_KG
-  TWO_KG
-  THREE_KG
-}
-
 model User {
-  id                Int                 @id @default(autoincrement())
   email             String              @unique
-  password          String
-  username          String              @unique
   firstName         String
   lastName          String
   role              UserRoles           @default(None)
-  isActive          Boolean             @default(false)
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @default(now()) @updatedAt
-  verificationToken VerificationToken[]
+  id                Int                 @id @default(autoincrement())
+  password          String
+  username          String              @unique
+  isActive          Boolean             @default(false)
   Order             Order[]
+  verificationToken VerificationToken[]
 }
 
 model VerificationToken {
   id        Int      @id @default(autoincrement())
   token     String   @unique
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
   userId    Int
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Product {
@@ -60,70 +36,73 @@ model Product {
   name           String
   description    String
   categoryId     Int
-  subCategoryId  Int?
   price          Int?
+  subCategoryId  Int?
   images         Image[]
-  category       Category            @relation(fields: [categoryId], references: [id])
-  ingredients    ProductIngredient[]
-  SubCategory    SubCategory?        @relation(fields: [subCategoryId], references: [id])
   OrderedProduct OrderedProduct[]
+  category       Category            @relation(fields: [categoryId], references: [id])
+  SubCategory    SubCategory?        @relation(fields: [subCategoryId], references: [id])
+  ingredients    ProductIngredient[]
 }
 
 model Order {
   id                         Int                       @id @default(autoincrement())
   orderedBy                  String
-  orderedProducts            OrderedProduct[]
-  orderDeliveryInformationId Int?
-  OrderDeliveryInformation   OrderDeliveryInformation? @relation(fields: [orderDeliveryInformationId], references: [id])
-  isOrderVerified            Boolean
   status                     OrderStatus
-  completedBy                User?                     @relation(fields: [userId], references: [id])
   userId                     Int?
   orderDateTime              DateTime?
   createdAt                  DateTime                  @default(now())
+  isOrderVerified            Boolean
+  orderDeliveryInformationId Int?
+  verificationToken          String?                   @unique
+  OrderDeliveryInformation   OrderDeliveryInformation? @relation(fields: [orderDeliveryInformationId], references: [id])
+  completedBy                User?                     @relation(fields: [userId], references: [id])
+  orderedProducts            OrderedProduct[]
 }
 
 model OrderDeliveryInformation {
-  id     Int     @id @default(autoincrement())
-  city   String?
-  adresa String?
-  zip    String?
-  Order  Order[]
+  id       Int     @id @default(autoincrement())
+  city     String?
+  adresa   String?
+  zip      String?
+  email    String?
+  phoneNum String?
+  Order    Order[]
 }
 
 model OrderedProduct {
   id          Int     @id @default(autoincrement())
-  product     Product @relation(fields: [productId], references: [id])
   productId   Int
-  order       Order   @relation(fields: [orderId], references: [id])
   orderId     Int
-  description String?
-  option      Option?
   optionId    Int?    @unique
   quantity    Int     @default(1)
+  description String?
+  option      Option?
+  order       Order   @relation(fields: [orderId], references: [id])
+  product     Product @relation(fields: [productId], references: [id])
 }
 
 model Option {
   id               Int             @id @default(autoincrement())
   cakeSize         CakeSize?
   cookieSize       CookieSize?
-  orderedProduct   OrderedProduct? @relation(fields: [orderedProductId], references: [id])
   orderedProductId Int?            @unique
+  orderedProduct   OrderedProduct? @relation(fields: [orderedProductId], references: [id])
 }
 
 model Category {
   id          Int           @id @default(autoincrement())
   name        String        @unique
-  subCategory SubCategory[]
   products    Product[]
+  subCategory SubCategory[]
 }
 
 model SubCategory {
   id         Int       @id @default(autoincrement())
   name       String
-  category   Category  @relation(fields: [categoryId], references: [id])
   categoryId Int
   products   Product[]
+  category   Category  @relation(fields: [categoryId], references: [id])
 }
 
 model Ingredient {
@@ -147,4 +126,28 @@ model Image {
   imageUrl  String
   productId Int
   product   Product @relation(fields: [productId], references: [id])
+}
+
+enum UserRoles {
+  HeadAdmin
+  Worker
+  None
+}
+
+enum OrderStatus {
+  Ordered
+  Completed
+  Pending
+  Canceled
+}
+
+enum CakeSize {
+  BIG
+  SMALL
+}
+
+enum CookieSize {
+  ONE_KG
+  THREE_KG
+  TWO_KG
 }
