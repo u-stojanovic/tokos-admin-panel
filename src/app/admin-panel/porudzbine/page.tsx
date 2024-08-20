@@ -1,4 +1,31 @@
+"use client";
+
+import React from "react";
+import { useFetchOrders } from "@/lib/hooks/order/useFetchOrders";
+import { Order } from "@/lib";
+
 export default function Porudzbine() {
+  const { data: orders, isLoading, isError } = useFetchOrders();
+  const [searchQuery, setSearchQuery] = React.useState<string>("");
+  const [filteredOrders, setFilteredOrders] = React.useState<Order[]>([]);
+
+  React.useEffect(() => {
+    if (orders) {
+      const result = orders.filter((order: Order) =>
+        order.orderedBy.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+      setFilteredOrders(result);
+    }
+  }, [searchQuery, orders]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Failed to load orders.</div>;
+  }
+
   return (
     <section className="flex flex-col gap-6 mt-6 flex-1 overflow-y-auto p-4 w-full">
       <h2 className="text-2xl font-bold mb-4 dark:text-white">Orders</h2>
@@ -13,6 +40,8 @@ export default function Porudzbine() {
               id="search"
               placeholder="Search orders..."
               className="w-full bg-gray-100 dark:bg-gray-800 rounded-md px-4 py-2 text-gray-500 dark:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           <div className="flex space-x-2 w-full md:w-auto">
@@ -41,26 +70,48 @@ export default function Porudzbine() {
             </tr>
           </thead>
           <tbody>
-            <tr className="border-b dark:border-gray-700">
-              <td className="py-3 px-4 dark:text-gray-400">#12345</td>
-              <td className="py-3 px-4 dark:text-gray-400">John Doe</td>
-              <td className="py-3 px-4 dark:text-gray-400">$99.99</td>
-              <td className="py-3 px-4 dark:text-gray-400">
-                <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full dark:bg-green-800 dark:text-green-100">
-                  Delivered
-                </span>
-              </td>
-              <td className="py-3 px-4 dark:text-gray-400">
-                <div className="flex space-x-2">
-                  <button className="text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-500">
-                    View
-                  </button>
-                  <button className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500">
-                    Cancel
-                  </button>
-                </div>
-              </td>
-            </tr>
+            {filteredOrders.map((order) => (
+              <tr key={order.id} className="border-b dark:border-gray-700">
+                <td className="py-3 px-4 dark:text-gray-400">{order.id}</td>
+                <td className="py-3 px-4 dark:text-gray-400">
+                  {order.orderedBy}
+                </td>
+                <td className="py-3 px-4 dark:text-gray-400">
+                  {order.orderedProducts?.reduce(
+                    (total, orderedProduct) =>
+                      total +
+                      (orderedProduct.product?.price || 0) *
+                        orderedProduct.quantity,
+                    0,
+                  ) || 0}
+                </td>
+                <td className="py-3 px-4 dark:text-gray-400">
+                  <span
+                    className={`px-2 py-1 rounded-full ${
+                      order.status === "Completed"
+                        ? "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100"
+                        : order.status === "Pending"
+                          ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100"
+                          : order.status === "Canceled"
+                            ? "bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100"
+                            : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100"
+                    }`}
+                  >
+                    {order.status}
+                  </span>
+                </td>
+                <td className="py-3 px-4 dark:text-gray-400">
+                  <div className="flex space-x-2">
+                    <button className="text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-500">
+                      View
+                    </button>
+                    <button className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500">
+                      Cancel
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
