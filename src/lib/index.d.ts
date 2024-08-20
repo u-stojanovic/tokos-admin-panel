@@ -157,8 +157,13 @@ export type Option = {
 
 export type OrderedProduct = {
   id: number;
-  productId: number;
-  product: Product;
+  product: {
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    categoryId: number;
+  };
   description?: string;
   option?: Option;
   quantity: number;
@@ -181,7 +186,9 @@ export type Order = {
   completedBy?: User;
   orderDateTime?: Date;
   createdAt: Date;
-  verificationToken?: string;
+  optionId: number | null;
+  cakeSize: string | null;
+  cookieSize: string | null;
 };
 
 export type User = {
