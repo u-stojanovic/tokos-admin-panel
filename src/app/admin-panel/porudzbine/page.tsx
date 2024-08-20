@@ -78,7 +78,6 @@ export default function Porudzbine() {
                 </td>
                 <td className="py-3 px-4 dark:text-gray-400">
                   {order.orderedProducts?.reduce((total, orderedProduct) => {
-                    console.log("Ordered Product:", orderedProduct);
                     const productPrice = orderedProduct.product?.price ?? 0;
                     const quantity = orderedProduct.quantity ?? 1;
                     return total + productPrice * quantity;
