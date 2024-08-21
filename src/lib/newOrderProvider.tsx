@@ -23,6 +23,7 @@ export const NewOrderProvider = ({ children }: { children: ReactNode }) => {
       description: "A new order has been placed.",
       variant: "destructive",
     });
+
     queryClient.invalidateQueries({
       queryKey: ["orders"],
       refetchType: "all",

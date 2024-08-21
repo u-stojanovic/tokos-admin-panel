@@ -16,11 +16,9 @@ import UploadNewImage from "./components/uploadImage";
 import { useProductCreationMutation } from "@/lib/hooks/product/useSubmitProductCreation";
 import { useImageUpload } from "@/context/ImageUploadContext";
 import { useSelectIngredients } from "@/context/ProductIngredientsSelectContext";
-
 import Link from "next/link";
 import { MdArrowBack } from "react-icons/md";
 
-// Schema for product form validation
 const productSchema = z.object({
   name: z.string().min(1, "Product name is required"),
   description: z.string().min(1, "Product description is required"),
@@ -39,14 +37,11 @@ const productSchema = z.object({
 
 export type ProductFormInputs = z.infer<typeof productSchema>;
 
-// Component for creating a new product
 export default function NewProductForm() {
   const { uploadImagesToFirebase } = useImageUpload();
   const mutation = useProductCreationMutation();
   const { addedIngredients } = useSelectIngredients();
-
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-
   const methods = useForm<ProductFormInputs>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -58,10 +53,36 @@ export default function NewProductForm() {
       images: [],
     },
   });
-
   const { toast } = useToast();
 
-  // Form submission handler
+  // WebSocket setup
+  // useEffect(() => {
+  //   const ws = new WebSocket("ws://localhost:8000/ws");
+  //
+  //   ws.onopen = () => {
+  //     console.log("WebSocket is open now.");
+  //   };
+  //
+  //   ws.onmessage = (event) => {
+  //     console.log("Message received from server:", event.data);
+  //   };
+  //
+  //   ws.onerror = (error) => {
+  //     console.error("WebSocket error:", error);
+  //   };
+  //
+  //   ws.onclose = () => {
+  //     console.log("WebSocket is closed now.");
+  //   };
+  //
+  //   return () => {
+  //     if (ws.readyState === WebSocket.OPEN) {
+  //       ws.close();
+  //     }
+  //   };
+  // }, []);
+  //
+
   const onSubmit: SubmitHandler<ProductFormInputs> = async (data) => {
     setIsLoading(true);
 
@@ -85,6 +106,22 @@ export default function NewProductForm() {
         {
           onSuccess: () => {
             setIsLoading(false);
+
+            // Send notification through WebSocket after product creation
+            // const ws = new WebSocket("ws://localhost:8000/ws");
+            // ws.onopen = () => {
+            //   ws.send(
+            //     JSON.stringify({
+            //       event: "new_product",
+            //       data: {
+            //         // i need to pass here the id
+            //         name: mutation.data.id,
+            //         category: data.category,
+            //         price: data.price,
+            //       },
+            //     }),
+            //   );
+            // };
           },
           onError: (error) => {
             setIsLoading(false);
