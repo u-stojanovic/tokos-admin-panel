@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+model User {
+  email             String              @unique
+  firstName         String
+  lastName          String
+  role              UserRoles           @default(None)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @default(now()) @updatedAt
+  id                Int                 @id @default(autoincrement())
+  password          String
+  username          String              @unique
+  isActive          Boolean             @default(false)
+  Order             Order[]
+  verificationToken VerificationToken[]
+}
+
+model VerificationToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  createdAt DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Product {
+  id             Int                 @id @default(autoincrement())
+  name           String
+  description    String
+  categoryId     Int
+  price          Int?
+  subCategoryId  Int?
+  images         Image[]
+  OrderedProduct OrderedProduct[]
+  category       Category            @relation(fields: [categoryId], references: [id])
+  SubCategory    SubCategory?        @relation(fields: [subCategoryId], references: [id])
+  ingredients    ProductIngredient[]
+}
+
+model Order {
+  id                         Int                       @id @default(autoincrement())
+  orderedBy                  String
+  status                     OrderStatus
+  userId                     Int?
+  orderDateTime              DateTime?
+  createdAt                  DateTime                  @default(now())
+  isOrderVerified            Boolean
+  orderDeliveryInformationId Int?
+  verificationToken          String?                   @unique
+  OrderDeliveryInformation   OrderDeliveryInformation? @relation(fields: [orderDeliveryInformationId], references: [id])
+  completedBy                User?                     @relation(fields: [userId], references: [id])
+  orderedProducts            OrderedProduct[]
+}
+
+model OrderDeliveryInformation {
+  id       Int     @id @default(autoincrement())
+  city     String?
+  adresa   String?
+  zip      String?
+  email    String?
+  phoneNum String?
+  Order    Order[]
+}
+
+model OrderedProduct {
+  id          Int     @id @default(autoincrement())
+  productId   Int
+  orderId     Int
+  optionId    Int?    @unique
+  quantity    Int     @default(1)
+  description String?
+  option      Option?
+  order       Order   @relation(fields: [orderId], references: [id])
+  product     Product @relation(fields: [productId], references: [id])
+}
+
+model Option {
+  id               Int             @id @default(autoincrement())
+  cakeSize         CakeSize?
+  cookieSize       CookieSize?
+  orderedProductId Int?            @unique
+  orderedProduct   OrderedProduct? @relation(fields: [orderedProductId], references: [id])
+}
+
+model Category {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  products    Product[]
+  subCategory SubCategory[]
+}
+
+model SubCategory {
+  id         Int       @id @default(autoincrement())
+  name       String
+  categoryId Int
+  products   Product[]
+  category   Category  @relation(fields: [categoryId], references: [id])
+}
+
+model Ingredient {
+  id        Int                 @id @default(autoincrement())
+  name      String
+  isAlergen Boolean
+  products  ProductIngredient[]
+}
+
+model ProductIngredient {
+  productId    Int
+  ingredientId Int
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  product      Product    @relation(fields: [productId], references: [id])
+
+  @@id([productId, ingredientId])
+}
+
+model Image {
+  id        Int     @id @default(autoincrement())
+  imageUrl  String
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+enum UserRoles {
+  HeadAdmin
+  Worker
+  None
+}
+
+enum OrderStatus {
+  Ordered
+  Completed
+  Pending
+  Canceled
+}
+
+enum CakeSize {
+  BIG
+  SMALL
+}
+
+enum CookieSize {
+  ONE_KG
+  THREE_KG
+  TWO_KG
+}
