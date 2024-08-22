@@ -13,20 +13,21 @@ const NewOrderContext = createContext<NewOrderContextType | undefined>(
 
 export const NewOrderProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
+
   const queryClient = useQueryClient();
 
-  const handleNewOrder = () => {
+  const handleNewOrder = async () => {
+    queryClient.invalidateQueries({
+      queryKey: ["orders"],
+      refetchType: "all",
+    });
+
     toast({
       className:
         "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4",
       title: "New Order",
       description: "A new order has been placed.",
       variant: "destructive",
-    });
-
-    queryClient.invalidateQueries({
-      queryKey: ["orders"],
-      refetchType: "all",
     });
   };
 
