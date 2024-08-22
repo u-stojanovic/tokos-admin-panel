@@ -25,8 +25,8 @@ export const NewOrderProvider = ({ children }: { children: ReactNode }) => {
     toast({
       className:
         "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4",
-      title: "New Order",
-      description: "A new order has been placed.",
+      title: "Nova Porudzbina",
+      description: "Nova porudzbina je stigla idite na sekciju porudzbina",
       variant: "destructive",
     });
   };
