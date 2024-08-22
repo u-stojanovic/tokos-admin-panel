@@ -32,8 +32,8 @@ export const NewOrderProvider = ({ children }: { children: ReactNode }) => {
 
   const wsUrl =
     process.env.NODE_ENV === "production"
-      ? (process.env.NEXT_PUBLIC_WS_URL_PROD as string)
-      : (process.env.NEXT_PUBLIC_WS_URL_DEV as string);
+      ? "wss://tokos-go-ws-production.up.railway.app/ws"
+      : "ws://localhost:8000/ws";
 
   // Set up the WebSocket connection
   useWebSocket(wsUrl, handleNewOrder);
