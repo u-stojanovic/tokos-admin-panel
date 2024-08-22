@@ -63,16 +63,6 @@ export default function WorkerSidebar({ user }: WorkerSidebarProps) {
             Istorija
           </span>
         </Link>
-
-        <Link
-          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/worker-panel/notifikacije")}`}
-          href="/worker-panel/notifikacije"
-        >
-          <Bell className="h-5 w-5" />
-          <span className="group-hover:block hidden transition-opacity delay-300 duration-500">
-            Notifikacije
-          </span>
-        </Link>
       </nav>
       <div className="flex flex-col items-center p-4 border-t border-gray-800 dark:border-gray-800 w-full transition-all">
         {user?.email && (

@@ -1,16 +1,15 @@
 "use client";
 
 import EditProductForm from "./form";
-import { useGetProductById } from "@/lib/hooks/product/useGetProductById";
 import EditProductSkeletonLoader from "./components/SkeletonLoader";
-import { Product } from "@/lib";
+import { useFetchProductById } from "@/lib/hooks/product/useGetProductById";
 
 export default function ProductEditSlug({
   params,
 }: {
   params: { id: number };
 }) {
-  const { data: product, isLoading } = useGetProductById(params.id as number);
+  const { data: product, isLoading } = useFetchProductById(params.id as number);
 
   if (isLoading) {
     return <EditProductSkeletonLoader />;
