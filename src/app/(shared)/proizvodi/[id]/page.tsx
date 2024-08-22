@@ -1,32 +1,21 @@
-"use client";
-
 import ProductDetails from "./ProductDetails";
-import ProductDetailsSkeleton from "./ProductDetailsSkeleton";
-import { useGetProductById } from "@/lib/hooks/product/useGetProductById";
+import { getProductByIdConfig } from "@/lib/hooks/product/useGetProductById";
+import { HydrationBoundary, QueryClient } from "@tanstack/react-query";
 
-export default function ProductSlug({ params }: { params: { id: number } }) {
-  const { data: product, isLoading, error } = useGetProductById(params.id);
+const queryClient = new QueryClient();
 
-  if (isLoading) {
-    return <ProductDetailsSkeleton />;
-  }
-
-  if (!product) {
-    return (
-      <div className="flex flex-col items-center justify-center m-4">
-        <h1 className="text-3xl font-bold text-lightMode-text dark:text-darkMode-text mb-6">
-          Product not found
-        </h1>
-      </div>
-    );
-  }
+export default async function Slug({ params }: { params: { id: number } }) {
+  const { queryKey, queryFn } = getProductByIdConfig(params.id);
+  await queryClient.prefetchQuery({
+    queryKey,
+    queryFn,
+  });
 
   return (
-    <div className="flex flex-col items-center justify-center m-4">
-      <div className="inline-block rounded-lg bg-lightMode-primary px-3 py-1 text-sm dark:bg-darkMode-primary text-lightMode-text">
-        {product.name}
-      </div>
-      <ProductDetails product={product as any} />
+    <div className="flex flex-col items-center justify-center">
+      <HydrationBoundary>
+        <ProductDetails id={params.id} />
+      </HydrationBoundary>
     </div>
   );
 }

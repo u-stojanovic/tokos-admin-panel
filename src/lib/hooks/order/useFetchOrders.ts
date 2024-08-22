@@ -1,14 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
 import { getAllOrders } from "@/lib/actions/orderActions";
-import { Order } from "@/lib";
 
-const fetchOrders = async (): Promise<Order[]> => {
-  return await getAllOrders();
+export const getAllOrdersConfig = () => {
+  const queryKey: [string] = ["orders"];
+
+  const queryFn = async () => {
+    return await getAllOrders();
+  };
+
+  return {
+    queryKey,
+    queryFn,
+  };
 };
 
-export const useFetchOrders = () => {
-  return useQuery<Order[]>({
-    queryKey: ["orders"],
-    queryFn: fetchOrders,
+export const useGetAllOrders = () => {
+  const { queryKey, queryFn } = getAllOrdersConfig();
+
+  return useQuery({
+    queryKey,
+    queryFn,
   });
 };
