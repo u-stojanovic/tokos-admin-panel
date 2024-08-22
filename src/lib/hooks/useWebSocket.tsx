@@ -25,7 +25,6 @@ export const useWebSocket = (url: string, execFn: () => void) => {
         try {
           const data: WebSocketMessage = JSON.parse(event.data);
           if (data.event === "new_order") {
-            console.log("DATA IS RECEIVED: ", data.event);
             execFn();
           }
         } catch (error) {
