@@ -1,10 +1,10 @@
-import { getUserAndRole } from "@/lib/auth/authUtils";
-import { redirect } from "next/navigation";
-import { UserRoles } from "@prisma/client";
 import AdminSidebar from "@/components/admin/Sidebar";
 import { ImageUploadProvider } from "@/context/ImageUploadContext";
 import { AddSelectedIngredientsProvider } from "@/context/ProductIngredientsSelectContext";
+import { getUserAndRole } from "@/lib/auth/authUtils";
 import { NewOrderProvider } from "@/lib/newOrderProvider";
+import { UserRoles } from "@prisma/client";
+import { redirect } from "next/navigation";
 
 export default async function AdminLayout({
   children,
@@ -26,14 +26,14 @@ export default async function AdminLayout({
       return (
         <ImageUploadProvider>
           <AddSelectedIngredientsProvider>
-            {/* <NewOrderProvider> */}
-            <div className="flex h-fit bg-gray-100 dark:bg-gray-800 overflow-hidden">
-              <AdminSidebar user={user} />
-              <div className="flex-1 h-screen overflow-y-auto p-8">
-                {children}
+            <NewOrderProvider>
+              <div className="flex h-fit bg-gray-100 dark:bg-gray-800 overflow-hidden">
+                <AdminSidebar user={user} />
+                <div className="flex-1 h-screen overflow-y-auto p-8">
+                  {children}
+                </div>
               </div>
-            </div>
-            {/* </NewOrderProvider> */}
+            </NewOrderProvider>
           </AddSelectedIngredientsProvider>
         </ImageUploadProvider>
       );

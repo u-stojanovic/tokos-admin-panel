@@ -1,9 +1,9 @@
 "use client";
 
-import React, { createContext, useContext, ReactNode } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useWebSocket } from "@/lib/hooks/useWebSocket";
 import { useQueryClient } from "@tanstack/react-query";
+import { createContext, ReactNode } from "react";
 
 interface NewOrderContextType {}
 
@@ -30,8 +30,13 @@ export const NewOrderProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const wsUrl =
+    process.env.NODE_ENV === "production"
+      ? (process.env.NEXT_PUBLIC_WS_URL_PROD as string)
+      : (process.env.NEXT_PUBLIC_WS_URL_DEV as string);
+
   // Set up the WebSocket connection
-  useWebSocket("ws://localhost:8000/ws", handleNewOrder);
+  useWebSocket(wsUrl, handleNewOrder);
 
   return (
     <NewOrderContext.Provider value={{}}>{children}</NewOrderContext.Provider>
