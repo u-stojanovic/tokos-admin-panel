@@ -1,4 +1,7 @@
 export default function Porudzbine() {
+  // NOTE:
+  // IMaju samo pending ordere,
+  // svoje ordere idu na history
   return (
     <section className="mb-8">
       <h2 className="text-2xl font-bold mb-4 dark:text-white">Orders</h2>

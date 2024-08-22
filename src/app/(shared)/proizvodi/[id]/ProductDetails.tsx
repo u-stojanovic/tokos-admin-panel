@@ -4,22 +4,39 @@ import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, EffectFade, Thumbs } from "swiper/modules";
 import Image from "next/image";
-import { Product } from "@/lib";
 import Link from "next/link";
 import { MdArrowBack } from "react-icons/md";
-
 import "swiper/css";
 import "swiper/css/navigation";
-import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 import "swiper/css/thumbs";
+import { useFetchProductById } from "@/lib/hooks/product/useGetProductById";
+import ProductDetailsSkeleton from "./ProductDetailsSkeleton";
 
 interface ProductPageProps {
-  product: Product;
+  id: number;
 }
 
-export default function ProductDetails({ product }: ProductPageProps) {
+export default function ProductDetails({ id }: ProductPageProps) {
   const [thumbsSwiper, setThumbsSwiper] = React.useState<any>(null);
+
+  const { data: product, isLoading, isError } = useFetchProductById(id);
+
+  if (isLoading) {
+    return <ProductDetailsSkeleton />;
+  }
+
+  if (!product && isError) {
+    return (
+      <div className="flex flex-col items-center justify-center m-4">
+        <h1 className="text-3xl font-bold text-lightMode-text dark:text-darkMode-text mb-6">
+          Product not found
+        </h1>
+      </div>
+    );
+  }
+
+  if (!product) return null;
 
   return (
     <div className="max-w-7xl mx-auto py-10 px-6">
@@ -53,7 +70,7 @@ export default function ProductDetails({ product }: ProductPageProps) {
                   loading="lazy"
                   width={1000}
                   height={1000}
-                  className="object-cover rounded-lg"
+                  className="object-cover rounded-lg max-h-[600px]"
                 />
               </SwiperSlide>
             ))}
@@ -87,7 +104,7 @@ export default function ProductDetails({ product }: ProductPageProps) {
             {product.description}
           </div>
           <div className="text-3xl font-bold text-lightMode-text dark:text-darkMode-text">
-            {product.price ? product.price : "N/A"} RSD
+            {product.price ? `${product.price} RSD` : "N/A"}
           </div>
           <div>
             <h2 className="text-2xl font-semibold text-lightMode-text dark:text-darkMode-text">

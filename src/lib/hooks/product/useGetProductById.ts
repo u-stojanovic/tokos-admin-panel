@@ -1,15 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
 import { getProductById } from "../../actions/productActions";
-import { Product } from "@prisma/client";
 
-const getProduct = async (id: number) => {
-  const product = await getProductById(id);
-  return product;
+export const useFetchProductById = (id: number) => {
+  return useQuery({
+    queryKey: ["getProductById", id],
+    queryFn: ({ queryKey }) => getProductById(queryKey[1] as number),
+  });
 };
 
-export const useGetProductById = (id: number) => {
-  return useQuery<Product | null>({
-    queryKey: ["getProduct", id],
-    queryFn: ({ queryKey }) => getProduct(queryKey[1] as number),
-  });
+export const getProductByIdConfig = (id: number) => {
+  const queryKey: [string, number] = ["getProductById", id];
+
+  const queryFn = async ({ queryKey }: { queryKey: [string, number] }) => {
+    return await getProductById(queryKey[1]);
+  };
+
+  return {
+    queryKey,
+    queryFn,
+  };
 };
