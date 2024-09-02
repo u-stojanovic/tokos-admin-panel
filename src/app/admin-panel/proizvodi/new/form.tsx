@@ -22,8 +22,11 @@ import { MdArrowBack } from "react-icons/md";
 const productSchema = z.object({
   name: z.string().min(1, "Product name is required"),
   description: z.string().min(1, "Product description is required"),
-  category: z.string().min(1, "Product category is required"),
-  price: z.number().min(0, "Product price must be a positive number"),
+  categoryId: z.number(),
+  subcategoryId: z.number().nullable(),
+  price: z
+    .number({ invalid_type_error: "Product price must be a number" })
+    .min(0, "Product price must be a positive number"),
   addedIngredients: z
     .array(
       z.object({
@@ -47,41 +50,13 @@ export default function NewProductForm() {
     defaultValues: {
       name: "",
       description: "",
-      category: "",
+      subcategoryId: null,
       price: 0,
       addedIngredients: [],
       images: [],
     },
   });
   const { toast } = useToast();
-
-  // WebSocket setup
-  // useEffect(() => {
-  //   const ws = new WebSocket("ws://localhost:8000/ws");
-  //
-  //   ws.onopen = () => {
-  //     console.log("WebSocket is open now.");
-  //   };
-  //
-  //   ws.onmessage = (event) => {
-  //     console.log("Message received from server:", event.data);
-  //   };
-  //
-  //   ws.onerror = (error) => {
-  //     console.error("WebSocket error:", error);
-  //   };
-  //
-  //   ws.onclose = () => {
-  //     console.log("WebSocket is closed now.");
-  //   };
-  //
-  //   return () => {
-  //     if (ws.readyState === WebSocket.OPEN) {
-  //       ws.close();
-  //     }
-  //   };
-  // }, []);
-  //
 
   const onSubmit: SubmitHandler<ProductFormInputs> = async (data) => {
     setIsLoading(true);
@@ -96,32 +71,26 @@ export default function NewProductForm() {
     }
 
     try {
+      // Upload new images and get their URLs
       const imageUrls = await uploadImagesToFirebase();
+
+      // Combine existing images with new ones
+      const allImageUrls = [...data.images, ...imageUrls];
+
       mutation.mutate(
         {
           ...data,
-          images: imageUrls,
+          images: allImageUrls,
           addedIngredients,
         },
         {
           onSuccess: () => {
             setIsLoading(false);
-
-            // Send notification through WebSocket after product creation
-            // const ws = new WebSocket("ws://localhost:8000/ws");
-            // ws.onopen = () => {
-            //   ws.send(
-            //     JSON.stringify({
-            //       event: "new_product",
-            //       data: {
-            //         // i need to pass here the id
-            //         name: mutation.data.id,
-            //         category: data.category,
-            //         price: data.price,
-            //       },
-            //     }),
-            //   );
-            // };
+            toast({
+              title: "Success",
+              description: "Product created successfully",
+            });
+            methods.reset();
           },
           onError: (error) => {
             setIsLoading(false);
@@ -159,7 +128,7 @@ export default function NewProductForm() {
         className="flex items-center text-blue-600 hover:underline mb-4"
       >
         <MdArrowBack className="mr-2" />
-        Idite nazad na listu proizvoda
+        Go back to product list
       </Link>
       <h1 className="font-bold text-2xl sm:text-3xl text-center">
         Create Product

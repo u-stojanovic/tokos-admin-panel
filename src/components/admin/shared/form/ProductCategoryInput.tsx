@@ -9,8 +9,12 @@ export const ProductCategoryInput: React.FC = () => {
     formState: { errors },
   } = useFormContext();
 
-  const handleCategoryChange = (category: string) => {
-    setValue("category", category);
+  const handleCategoryChange = (
+    categoryId: number,
+    subcategoryId: number | null,
+  ) => {
+    setValue("categoryId", categoryId);
+    setValue("subcategoryId", subcategoryId);
   };
 
   return (
