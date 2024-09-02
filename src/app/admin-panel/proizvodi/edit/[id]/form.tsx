@@ -4,10 +4,7 @@ import React from "react";
 import { useForm, FormProvider, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { CategoriesComboBox } from "@/components/ui/categories_combobox";
-import { Product } from "@/lib";
 import UploadNewImage from "../../new/components/uploadImage";
 import { UploadedImages } from "../../new/components/UploadedImages";
 import { ProductIngredientsInput } from "../../../../../components/admin/shared/form/ProductIngredientsInput";
@@ -19,13 +16,18 @@ import { ProductDescriptionInput } from "@/components/admin/shared/form/ProductD
 import { ProductPriceInput } from "@/components/admin/shared/form/ProductPriceInput";
 import Link from "next/link";
 import { MdArrowBack } from "react-icons/md";
+import { ProductCategoryInput } from "@/components/admin/shared/form/ProductCategoryInput";
+import { Product } from "@/lib";
+import { useToast } from "@/components/ui/use-toast";
 
-// Define the schema
 const productSchema = z.object({
   name: z.string().min(1, "Product name is required"),
   description: z.string().min(1, "Product description is required"),
-  category: z.string().min(1, "Product category is required"),
-  price: z.number().min(0, "Product price must be a positive number"),
+  categoryId: z.number(),
+  subcategoryId: z.number().nullable(),
+  price: z
+    .number({ invalid_type_error: "Product price must be a number" })
+    .min(0, "Product price must be a positive number"),
   addedIngredients: z
     .array(
       z.object({
@@ -45,14 +47,15 @@ interface EditProductFormProps {
 
 export default function EditProductForm({ product }: EditProductFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const { images, uploadImagesToFirebase } = useImageUpload();
+  const { images: newImages, uploadImagesToFirebase } = useImageUpload();
 
   const methods = useForm<ProductFormInputs>({
     resolver: zodResolver(productSchema),
     defaultValues: {
       name: product.name,
       description: product.description,
-      category: product.category.name,
+      categoryId: product.category.id,
+      subcategoryId: product.subCategoryId || null,
       price: product.price || 0,
       addedIngredients: product.ingredients.map((prodIng) => ({
         name: prodIng.ingredient.name,
@@ -61,42 +64,60 @@ export default function EditProductForm({ product }: EditProductFormProps) {
       images: product.images.map((image) => image.imageUrl),
     },
   });
-  const {
-    formState: { errors },
-    setValue,
-  } = methods;
 
   const updateProductMutation = useUpdateProduct({ productId: product.id });
+  const { toast } = useToast();
 
   const onSubmit: SubmitHandler<ProductFormInputs> = async (data) => {
     try {
       setIsLoading(true);
 
       let newImageUrls: string[] = [];
-      if (images.length > 0) {
+      if (newImages.length > 0) {
         newImageUrls = await uploadImagesToFirebase();
       }
 
       const allImageUrls: string[] = [...data.images, ...newImageUrls];
 
-      updateProductMutation.mutate({
-        ...data,
-        images: allImageUrls,
-      });
+      updateProductMutation.mutate(
+        {
+          ...data,
+          images: allImageUrls,
+        },
+        {
+          onSuccess: () => {
+            setIsLoading(false);
+            toast({
+              title: "Success",
+              description: "Product updated successfully",
+            });
+          },
+          onError: (error) => {
+            setIsLoading(false);
+            toast({
+              title: "Error",
+              description: "Failed to update product",
+            });
+            console.error("Mutation error:", error);
+          },
+        },
+      );
     } catch (error) {
       console.error("Failed to update product:", error);
       setIsLoading(false);
-    } finally {
-      setIsLoading(false);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+      });
     }
   };
 
   const onError = (errors: any) => {
     console.error("Validation errors:", errors);
-  };
-
-  const handleCategoryChange = (category: string) => {
-    setValue("category", category);
+    toast({
+      title: "Error",
+      description: "Please correct the highlighted errors",
+    });
   };
 
   return (
@@ -106,7 +127,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
         className="flex items-center text-blue-600 hover:underline mb-4"
       >
         <MdArrowBack className="mr-2" />
-        Idite nazad na listu proizvoda
+        Go back to product list
       </Link>
       <h1 className="font-bold text-2xl sm:text-3xl text-center">
         Edit Product
@@ -119,21 +140,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
           <div className="flex flex-col gap-6">
             <ProductNameInput />
             <ProductDescriptionInput />
-            <div className="grid gap-2">
-              <Label
-                htmlFor="productCategory"
-                className="text-base font-semibold"
-              >
-                Product Category
-              </Label>
-              <CategoriesComboBox
-                currCategory={product.category.name}
-                onChange={handleCategoryChange}
-              />
-              {errors.category && (
-                <span className="text-red-600">{errors.category.message}</span>
-              )}
-            </div>
+            <ProductCategoryInput />
             <ProductPriceInput />
             <EditProductImages product={product} />
             <UploadNewImage />
@@ -142,7 +149,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
               type="submit"
               disabled={updateProductMutation.isPending || isLoading}
             >
-              {updateProductMutation.isPending || isLoading
+              {isLoading || updateProductMutation.isPending
                 ? "Updating..."
                 : "Update Product"}
             </Button>

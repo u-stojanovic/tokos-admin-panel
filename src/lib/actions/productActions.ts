@@ -54,6 +54,7 @@ export async function getProductById(id: number) {
       where: { id: Number(id) },
       include: {
         category: true,
+        SubCategory: true,
         images: true,
         ingredients: {
           include: {
@@ -102,19 +103,32 @@ export async function submitEdit(
   formValues: ProductFormInputs,
 ): Promise<Product> {
   try {
-    // Check if the category exists, otherwise create a new one
-    let categoryId: number;
-    const foundCategory = await prisma.category.findFirst({
-      where: { name: formValues.category },
+    let categoryId: number | undefined;
+    let subCategoryId: number | undefined | null = null;
+
+    // Check if category exists, otherwise create a new one
+    const foundCategory = await prisma.category.findUnique({
+      where: { id: formValues.categoryId },
     });
 
-    if (foundCategory) {
-      categoryId = foundCategory.id;
-    } else {
-      const newCategory = await prisma.category.create({
-        data: { name: formValues.category },
+    if (!foundCategory) {
+      throw new Error("Category not found");
+    }
+
+    categoryId = foundCategory.id;
+
+    // If the category is "torte" or id 3, check subcategory
+    if (formValues.subcategoryId) {
+      const foundSubCategory = await prisma.subCategory.findFirst({
+        where: {
+          id: formValues.subcategoryId,
+          categoryId: categoryId,
+        },
       });
-      categoryId = newCategory.id;
+
+      if (foundSubCategory) {
+        subCategoryId = foundSubCategory.id;
+      }
     }
 
     // Processing ingredients to get ids
@@ -145,14 +159,15 @@ export async function submitEdit(
         description: formValues.description,
         price: formValues.price,
         categoryId: categoryId,
+        subCategoryId: subCategoryId,
         ingredients: {
-          deleteMany: {}, // Remove all existing ingredients associations
+          deleteMany: {},
           create: ingredientIds.map((ingredientId) => ({
             ingredientId,
           })),
         },
         images: {
-          deleteMany: {}, // Remove all existing images
+          deleteMany: {},
           create: formValues.images.map((image) => ({
             imageUrl: image,
           })),
@@ -173,44 +188,34 @@ export async function submitEdit(
   } catch (error) {
     console.log("Error updating product: ", error);
     throw new Error("Failed to update product");
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
-// Create a new product if it doesn't exist, otherwise return the existing product
 export async function submitCreate(
   formValues: ProductFormInputs,
 ): Promise<Product> {
   try {
+    let categoryId: number | undefined;
+    let subCategoryId: number | undefined | null = null;
+
     // Check if category exists, otherwise create a new one
-    let categoryId: number;
-    const foundCategory = await prisma.category.findFirst({
-      where: { name: formValues.category },
+    const foundCategory = await prisma.category.findUnique({
+      where: { id: formValues.categoryId },
+      include: { subCategory: true },
     });
-    if (foundCategory) {
-      categoryId = foundCategory.id;
-    } else {
-      const newCategory = await prisma.category.create({
-        data: {
-          name: formValues.category,
-        },
-      });
-      categoryId = newCategory.id;
+
+    if (!foundCategory) {
+      throw new Error("Category not found");
     }
 
-    // if product with same data exists
-    const existingProduct = await prisma.product.findFirst({
-      where: {
-        name: formValues.name,
-        categoryId,
-        description: formValues.description,
-        price: formValues.price,
-      },
-    });
+    categoryId = foundCategory.id;
 
-    if (existingProduct) {
-      return existingProduct;
+    const foundSubCategory = foundCategory.subCategory.find(
+      (subCat) => subCat.id === formValues.subcategoryId,
+    );
+
+    if (foundSubCategory) {
+      subCategoryId = foundSubCategory.id;
     }
 
     // Processing ingredients to get ids
@@ -238,7 +243,8 @@ export async function submitCreate(
       data: {
         name: formValues.name,
         description: formValues.description,
-        categoryId: categoryId,
+        categoryId,
+        subCategoryId,
         price: formValues.price,
         ingredients: {
           create: ingredientIds.map((ingredientId) => ({
@@ -257,7 +263,5 @@ export async function submitCreate(
   } catch (error) {
     console.log("Error creating product: ", error);
     throw new Error("Failed to create product");
-  } finally {
-    await prisma.$disconnect();
   }
 }
