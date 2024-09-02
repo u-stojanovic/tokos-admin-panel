@@ -17,7 +17,7 @@ export const useWebSocket = (url: string, execFn: () => void) => {
       socket = new WebSocket(url);
 
       socket.onopen = () => {
-        console.log("WebSocket connection established.");
+        // console.log("WebSocket connection established.");
         attempts = 0;
       };
 
@@ -28,22 +28,22 @@ export const useWebSocket = (url: string, execFn: () => void) => {
             execFn();
           }
         } catch (error) {
-          console.error("Failed to parse WebSocket message:", error);
+          // console.error("Failed to parse WebSocket message:", error);
         }
       };
 
       socket.onclose = () => {
-        console.log("WebSocket connection closed.");
+        // console.log("WebSocket connection closed.");
         // Implement retry logic here
         if (attempts < 5) {
           attempts++;
-          console.log(`Attempting to reconnect... (${attempts})`);
+          // console.log(`Attempting to reconnect... (${attempts})`);
           setTimeout(connect, 1000);
         }
       };
 
       socket.onerror = (error) => {
-        console.error("WebSocket error:", error);
+        // console.error("WebSocket error:", error);
         socket?.close();
       };
     };

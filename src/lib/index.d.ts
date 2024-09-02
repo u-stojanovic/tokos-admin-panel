@@ -1,6 +1,7 @@
 import {
   ProductIngredient as PrismaProductIngredient,
   Ingredient as PrismaIngredient,
+  SubCategory,
 } from "@prisma/client";
 
 export interface UserInformation {
@@ -30,6 +31,8 @@ export type Product = {
   categoryId: number;
   images: Image[];
   category: Category;
+  subCategoryId?: number;
+  subcategory?: SubCategory;
   ingredients: ProductIngredient[]; // Use the extended type here
 };
 
