@@ -103,7 +103,11 @@ export default function ListOrders() {
                           ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100"
                           : order.status === "Canceled"
                             ? "bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100"
-                            : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100"
+                            : order.status === "Accepted"
+                              ? "bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100"
+                              : order.status === "Ordered"
+                                ? "bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100"
+                                : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100"
                     }`}
                   >
                     {order.status}

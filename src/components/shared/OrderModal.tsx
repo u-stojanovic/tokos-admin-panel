@@ -1,9 +1,5 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogClose,
-} from "@/components/ui/dialog";
+import React from "react";
+import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -16,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Order } from "@/lib";
+import { useAcceptOrderMutation } from "@/lib/hooks/order/useAcceptOrder";
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -34,6 +31,14 @@ export default function OrderModal({
     !order.orderDeliveryInformation?.city &&
     !order.orderDeliveryInformation?.adresa &&
     !order.orderDeliveryInformation?.zip;
+
+  const mutation = useAcceptOrderMutation();
+
+  const handleAcceptOrder = () => {
+    if (order) {
+      mutation.mutate(order as any);
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -131,8 +136,12 @@ export default function OrderModal({
           </div>
         </div>
         <DialogFooter>
-          <Button className="ml-auto bg-green-500 hover:bg-green-600">
-            Prihvati porudžbinu
+          <Button
+            className="ml-auto bg-green-500 hover:bg-green-600"
+            onClick={handleAcceptOrder}
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? "Prihvatanje..." : "Prihvati porudžbinu"}
           </Button>
           <Button type="button" onClick={onClose}>
             Zatvori

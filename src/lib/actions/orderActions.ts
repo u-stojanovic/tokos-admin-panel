@@ -1,6 +1,8 @@
 "use server";
 
+import { OrderStatus } from "@prisma/client";
 import prisma from "../../../prisma/client";
+import { getUserAndRole } from "../auth/authUtils";
 
 export async function getAllOrders() {
   try {
@@ -97,7 +99,43 @@ export async function getAllOrderedOrders() {
   }
 }
 
-export async function acceptOrder(data: { user: { id: number } }) {
+export async function acceptOrder(order: any) {
   try {
-  } catch (error) {}
+    const { user } = await getUserAndRole();
+
+    if (!user) {
+      throw new Error("User not logged in");
+    }
+
+    const foundUser = await prisma.user.findUnique({
+      where: {
+        id: user?.id,
+      },
+    });
+
+    if (!foundUser) {
+      throw new Error("User not found in user");
+    }
+
+    const foundOrder = await prisma.order.findUnique({
+      where: {
+        id: order.id,
+      },
+    });
+
+    if (!foundOrder) {
+      throw new Error("Order not found");
+    }
+
+    await prisma.order.update({
+      where: {
+        id: foundOrder.id,
+      },
+      data: {
+        status: OrderStatus.Accepted,
+      },
+    });
+  } catch (error) {
+    console.log("error: ", error);
+  }
 }
