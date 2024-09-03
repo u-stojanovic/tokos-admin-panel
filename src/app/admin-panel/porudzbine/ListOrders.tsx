@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { useGetAllOrders } from "@/lib/hooks/order/useFetchOrders";
-import { Order } from "@/lib";
 import OrderModal from "@/components/shared/OrderModal";
+import { Order } from "@prisma/client";
 
 export default function ListOrders() {
   const { data: orders, isLoading, isError } = useGetAllOrders();
@@ -14,7 +14,7 @@ export default function ListOrders() {
 
   useEffect(() => {
     if (orders) {
-      const result = orders.filter((order: Order) =>
+      const result = orders.filter((order: any) =>
         order.orderedBy.toLowerCase().includes(searchQuery.toLowerCase()),
       );
       setFilteredOrders(result);
@@ -78,18 +78,21 @@ export default function ListOrders() {
             </tr>
           </thead>
           <tbody>
-            {filteredOrders.map((order) => (
+            {filteredOrders.map((order: any) => (
               <tr key={order.id} className="border-b dark:border-gray-700">
                 <td className="py-3 px-4 dark:text-gray-400">{order.id}</td>
                 <td className="py-3 px-4 dark:text-gray-400">
                   {order.orderedBy}
                 </td>
                 <td className="py-3 px-4 dark:text-gray-400">
-                  {order.orderedProducts?.reduce((total, orderedProduct) => {
-                    const productPrice = orderedProduct.product?.price ?? 0;
-                    const quantity = orderedProduct.quantity ?? 1;
-                    return total + productPrice * quantity;
-                  }, 0) || 0}
+                  {order.orderedProducts?.reduce(
+                    (total: any, orderedProduct: any) => {
+                      const productPrice = orderedProduct.product?.price ?? 0;
+                      const quantity = orderedProduct.quantity ?? 1;
+                      return total + productPrice * quantity;
+                    },
+                    0,
+                  ) || 0}
                 </td>
                 <td className="py-3 px-4 dark:text-gray-400">
                   <span
@@ -127,7 +130,7 @@ export default function ListOrders() {
       <OrderModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        order={selectedOrder}
+        order={selectedOrder as any}
       />
     </section>
   );

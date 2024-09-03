@@ -1,9 +1,8 @@
 "use server";
 
 import prisma from "../../../prisma/client";
-import { Order } from "@prisma/client";
 
-export async function getAllOrders(): Promise<Order[]> {
+export async function getAllOrders() {
   try {
     const orders = await prisma.order.findMany({
       include: {
@@ -49,7 +48,7 @@ export async function getAllOrders(): Promise<Order[]> {
   }
 }
 
-export async function getAllOrderedOrders(): Promise<Order[]> {
+export async function getAllOrderedOrders() {
   try {
     const orders = await prisma.order.findMany({
       where: {
@@ -98,10 +97,7 @@ export async function getAllOrderedOrders(): Promise<Order[]> {
   }
 }
 
-export async function acceptOrder(data: {
-  user: { id: number };
-  order: Order;
-}) {
+export async function acceptOrder(data: { user: { id: number } }) {
   try {
   } catch (error) {}
 }

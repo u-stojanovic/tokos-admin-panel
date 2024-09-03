@@ -14,10 +14,10 @@ export default function ListOrders() {
 
   useEffect(() => {
     if (orders) {
-      const result = orders.filter((order: Order) =>
+      const result = orders.filter((order: any) =>
         order.orderedBy.toLowerCase().includes(searchQuery.toLowerCase()),
       );
-      setFilteredOrders(result);
+      setFilteredOrders(result as any);
     }
   }, [searchQuery, orders]);
 
