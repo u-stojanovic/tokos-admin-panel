@@ -25,20 +25,21 @@ export default function OrderModal({
   onClose,
   order,
 }: OrderModalProps) {
+  const mutation = useAcceptOrderMutation();
+
+  const handleAcceptOrder = () => {
+    if (order) {
+      mutation.mutate(order as any);
+      onClose();
+    }
+  };
+
   if (!isOpen || !order) return null;
 
   const isDeliveryInformationEmpty =
     !order.orderDeliveryInformation?.city &&
     !order.orderDeliveryInformation?.adresa &&
     !order.orderDeliveryInformation?.zip;
-
-  const mutation = useAcceptOrderMutation();
-
-  const handleAcceptOrder = () => {
-    if (order) {
-      mutation.mutate(order as any);
-    }
-  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
