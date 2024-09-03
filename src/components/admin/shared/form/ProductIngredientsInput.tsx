@@ -1,18 +1,29 @@
 "use client";
 
-import React from "react";
-import { Ingredient } from "@prisma/client";
-
-import { Input } from "@/components/ui/input";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CheckedState } from "@radix-ui/react-checkbox";
-
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useSelectIngredients } from "@/context/ProductIngredientsSelectContext";
+import { useDeleteIngredientMutation } from "@/lib/hooks/ingredient/useDeleteIngredient";
 import { useCreateNewIngredientMutation } from "@/lib/hooks/ingredient/useIngredientCreationMutation";
 import { useFetchIngredients } from "@/lib/hooks/ingredient/useIngredientsFetch";
-import { useSelectIngredients } from "@/context/ProductIngredientsSelectContext";
+import { Ingredient } from "@prisma/client";
+import { CheckedState } from "@radix-ui/react-checkbox";
+import React from "react";
 import { useFormContext } from "react-hook-form";
+import { FaTrash } from "react-icons/fa";
 
 // Skeleton loader component
 export const IngredientSkeleton: React.FC = () => (
@@ -33,6 +44,7 @@ export const ProductIngredientsInput: React.FC = () => {
   const { data: ingredients, isLoading } = useFetchIngredients();
   const { mutate: createNewIngredient, isPending } =
     useCreateNewIngredientMutation();
+  const { mutate: deleteIngredient } = useDeleteIngredientMutation();
   const { setValue, getValues } = useFormContext();
 
   const [newIngredientName, setNewIngredientName] = React.useState("");
@@ -106,9 +118,40 @@ export const ProductIngredientsInput: React.FC = () => {
                     />
                     <span className="text-base">{ingredient.name}</span>
                   </div>
-                  {ingredient.isAlergen && (
-                    <p className="text-red-600 text-sm">- Alergen</p>
-                  )}
+                  <div className="flex items-center gap-4">
+                    {ingredient.isAlergen && (
+                      <p className="text-red-600 text-sm">- Alergen</p>
+                    )}
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="sm">
+                          <FaTrash className="text-red-600" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Are you absolutely sure?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently
+                            delete the ingredient and remove data from our
+                            server.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() =>
+                              deleteIngredient({ id: ingredient.id })
+                            }
+                          >
+                            Continue
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </div>
               );
             })}
