@@ -1,12 +1,17 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useGetAllOrderedOrders } from "@/lib/hooks/order/useFetchOrderedOrders";
+import { useGetAllOrderedAndAcceptedOrders } from "@/lib/hooks/order/useFetchOrderedOrders";
 import { Order } from "@/lib";
 import OrderModal from "@/components/shared/OrderModal";
+import { OrderStatus } from "@prisma/client";
 
 export default function ListOrders() {
-  const { data: orders, isLoading, isError } = useGetAllOrderedOrders();
+  const {
+    data: orders,
+    isLoading,
+    isError,
+  } = useGetAllOrderedAndAcceptedOrders();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -14,7 +19,7 @@ export default function ListOrders() {
 
   useEffect(() => {
     if (orders) {
-      const result = orders.filter((order: any) =>
+      const result = orders.filter((order) =>
         order.orderedBy.toLowerCase().includes(searchQuery.toLowerCase()),
       );
       setFilteredOrders(result as any);
@@ -100,7 +105,11 @@ export default function ListOrders() {
                           ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100"
                           : order.status === "Canceled"
                             ? "bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100"
-                            : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100"
+                            : order.status === (OrderStatus.Accepted as any)
+                              ? "bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100"
+                              : order.status === "Ordered"
+                                ? "bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100"
+                                : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100"
                     }`}
                   >
                     {order.status}

@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAllOrderedOrders } from "@/lib/actions/orderActions";
+import { getAllOrderedAndAcceptedOrders } from "@/lib/actions/orderActions";
 
-export const getAllOrderedOrdersConfig = () => {
+export const getAllOrderedAndAcceptedOrdersConfig = () => {
   const queryKey: [string] = ["orders"];
 
   const queryFn = async () => {
-    return await getAllOrderedOrders();
+    return await getAllOrderedAndAcceptedOrders();
   };
 
   return {
@@ -14,8 +14,8 @@ export const getAllOrderedOrdersConfig = () => {
   };
 };
 
-export const useGetAllOrderedOrders = () => {
-  const { queryKey, queryFn } = getAllOrderedOrdersConfig();
+export const useGetAllOrderedAndAcceptedOrders = () => {
+  const { queryKey, queryFn } = getAllOrderedAndAcceptedOrdersConfig();
 
   return useQuery({
     queryKey,
