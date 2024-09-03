@@ -49,3 +49,43 @@ export async function addIngredient(data: {
     prisma.$disconnect();
   }
 }
+
+export async function deleteIngredient(data: {
+  id: number;
+}): Promise<Ingredient | string> {
+  try {
+    return await prisma.$transaction(async (prisma) => {
+      const foundIngredient = await prisma.ingredient.findUnique({
+        where: {
+          id: data.id,
+        },
+        include: {
+          products: true,
+        },
+      });
+
+      if (!foundIngredient) {
+        throw new Error("Ingredient not found");
+      }
+
+      await prisma.productIngredient.deleteMany({
+        where: {
+          ingredientId: data.id,
+        },
+      });
+
+      const deletedIngredient = await prisma.ingredient.delete({
+        where: {
+          id: data.id,
+        },
+      });
+
+      return deletedIngredient;
+    });
+  } catch (error) {
+    console.error("Error deleting ingredient:", error);
+    throw error;
+  } finally {
+    await prisma.$disconnect();
+  }
+}
