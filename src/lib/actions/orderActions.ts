@@ -50,11 +50,13 @@ export async function getAllOrders() {
   }
 }
 
-export async function getAllOrderedOrders() {
+export async function getAllOrderedAndAcceptedOrders() {
   try {
     const orders = await prisma.order.findMany({
       where: {
-        status: "Ordered",
+        status: {
+          in: ["Ordered", "Accepted"],
+        },
       },
       include: {
         OrderDeliveryInformation: {
