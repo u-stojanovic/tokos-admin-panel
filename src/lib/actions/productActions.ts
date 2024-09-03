@@ -77,6 +77,9 @@ export async function getProductById(id: number) {
 export async function deleteProduct(productId: number) {
   try {
     await prisma.$transaction([
+      prisma.orderedProduct.deleteMany({
+        where: { productId },
+      }),
       prisma.productIngredient.deleteMany({
         where: { productId },
       }),
