@@ -3,11 +3,14 @@
 import React, { useState, useEffect } from "react";
 import { useGetAllOrders } from "@/lib/hooks/order/useFetchOrders";
 import { Order } from "@/lib";
+import OrderModal from "@/components/shared/OrderModal";
 
 export default function ListOrders() {
   const { data: orders, isLoading, isError } = useGetAllOrders();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     if (orders) {
@@ -17,6 +20,11 @@ export default function ListOrders() {
       setFilteredOrders(result);
     }
   }, [searchQuery, orders]);
+
+  const handleViewOrder = (order: Order) => {
+    setSelectedOrder(order);
+    setIsModalOpen(true);
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -100,7 +108,10 @@ export default function ListOrders() {
                 </td>
                 <td className="py-3 px-4 dark:text-gray-400">
                   <div className="flex space-x-2">
-                    <button className="text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-500">
+                    <button
+                      className="text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-500"
+                      onClick={() => handleViewOrder(order)}
+                    >
                       View
                     </button>
                     <button className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500">
@@ -113,6 +124,11 @@ export default function ListOrders() {
           </tbody>
         </table>
       </div>
+      <OrderModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        order={selectedOrder}
+      />
     </section>
   );
 }
