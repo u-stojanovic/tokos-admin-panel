@@ -2,21 +2,29 @@
 
 import React, { useState, useEffect } from "react";
 import { useGetAllOrders } from "@/lib/hooks/order/useFetchOrders";
-import { Order } from "@/lib";
+import OrderModal from "@/components/shared/OrderModal";
+import { Order } from "@prisma/client";
 
 export default function ListOrders() {
   const { data: orders, isLoading, isError } = useGetAllOrders();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     if (orders) {
-      const result = orders.filter((order: Order) =>
+      const result = orders.filter((order: any) =>
         order.orderedBy.toLowerCase().includes(searchQuery.toLowerCase()),
       );
       setFilteredOrders(result);
     }
   }, [searchQuery, orders]);
+
+  const handleViewOrder = (order: Order) => {
+    setSelectedOrder(order);
+    setIsModalOpen(true);
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -70,18 +78,21 @@ export default function ListOrders() {
             </tr>
           </thead>
           <tbody>
-            {filteredOrders.map((order) => (
+            {filteredOrders.map((order: any) => (
               <tr key={order.id} className="border-b dark:border-gray-700">
                 <td className="py-3 px-4 dark:text-gray-400">{order.id}</td>
                 <td className="py-3 px-4 dark:text-gray-400">
                   {order.orderedBy}
                 </td>
                 <td className="py-3 px-4 dark:text-gray-400">
-                  {order.orderedProducts?.reduce((total, orderedProduct) => {
-                    const productPrice = orderedProduct.product?.price ?? 0;
-                    const quantity = orderedProduct.quantity ?? 1;
-                    return total + productPrice * quantity;
-                  }, 0) || 0}
+                  {order.orderedProducts?.reduce(
+                    (total: any, orderedProduct: any) => {
+                      const productPrice = orderedProduct.product?.price ?? 0;
+                      const quantity = orderedProduct.quantity ?? 1;
+                      return total + productPrice * quantity;
+                    },
+                    0,
+                  ) || 0}
                 </td>
                 <td className="py-3 px-4 dark:text-gray-400">
                   <span
@@ -92,7 +103,11 @@ export default function ListOrders() {
                           ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100"
                           : order.status === "Canceled"
                             ? "bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100"
-                            : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100"
+                            : order.status === "Accepted"
+                              ? "bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100"
+                              : order.status === "Ordered"
+                                ? "bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100"
+                                : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100"
                     }`}
                   >
                     {order.status}
@@ -100,7 +115,10 @@ export default function ListOrders() {
                 </td>
                 <td className="py-3 px-4 dark:text-gray-400">
                   <div className="flex space-x-2">
-                    <button className="text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-500">
+                    <button
+                      className="text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-500"
+                      onClick={() => handleViewOrder(order)}
+                    >
                       View
                     </button>
                     <button className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500">
@@ -113,6 +131,11 @@ export default function ListOrders() {
           </tbody>
         </table>
       </div>
+      <OrderModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        order={selectedOrder as any}
+      />
     </section>
   );
 }

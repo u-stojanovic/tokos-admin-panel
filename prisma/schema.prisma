@@ -139,6 +139,7 @@ enum OrderStatus {
   Completed
   Pending
   Canceled
+  Accepted
 }
 
 enum CakeSize {
