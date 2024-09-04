@@ -4,6 +4,18 @@ import { OrderStatus } from "@prisma/client";
 import prisma from "../../../prisma/client";
 import { getUserAndRole } from "../auth/authUtils";
 
+export async function getOrdersCount() {
+  try {
+    const ordersCount = await prisma.order.aggregate({
+      _count: true,
+    });
+    return ordersCount._count;
+  } catch (error) {
+    console.log("error: ", error);
+    return error;
+  }
+}
+
 export async function getAllOrders() {
   try {
     const orders = await prisma.order.findMany({

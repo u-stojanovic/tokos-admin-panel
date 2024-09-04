@@ -1,3 +1,4 @@
+import { getOrdersCount } from "@/lib/actions/orderActions";
 import { getTotalProducts } from "@/lib/actions/productActions";
 import { getTotalUsers } from "@/lib/actions/userActions";
 import { getUserAndRole } from "@/lib/auth/authUtils";
@@ -5,6 +6,7 @@ import { getUserAndRole } from "@/lib/auth/authUtils";
 export default async function Dashboard() {
   const userCount = await getTotalUsers();
   const productCount = await getTotalProducts();
+  const ordersCount = await getOrdersCount();
   const { user } = await getUserAndRole();
 
   return (
@@ -20,7 +22,7 @@ export default async function Dashboard() {
       )}
       <section className="mb-8">
         <h2 className="text-2xl font-bold mb-4 dark:text-white">Dashboard</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-lg shadow">
             <h3 className="text-lg font-bold mb-2 dark:text-white">
               Total Users
@@ -41,12 +43,14 @@ export default async function Dashboard() {
             <h3 className="text-lg font-bold mb-2 dark:text-white">
               Total Orders
             </h3>
-            <p className="text-4xl font-bold text-indigo-500">1,823</p>
+            <p className="text-4xl font-bold text-indigo-500">
+              {ordersCount as number}
+            </p>
           </div>
-          <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-lg shadow">
-            <h3 className="text-lg font-bold mb-2 dark:text-white">Revenue</h3>
-            <p className="text-4xl font-bold text-indigo-500">$156,342</p>
-          </div>
+          {/* <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-lg shadow"> */}
+          {/*   <h3 className="text-lg font-bold mb-2 dark:text-white">Revenue</h3> */}
+          {/*   <p className="text-4xl font-bold text-indigo-500">$156,342</p> */}
+          {/* </div> */}
         </div>
       </section>
     </div>
