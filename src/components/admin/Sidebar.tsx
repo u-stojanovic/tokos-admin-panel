@@ -80,25 +80,6 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
             Istorija
           </span>
         </Link>
-
-        <Link
-          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/admin-panel/podesavanja")}`}
-          href="/admin-panel/podesavanja"
-        >
-          <SettingsIcon className="h-5 w-5" />
-          <span className="group-hover:block hidden transition-opacity delay-300 duration-500">
-            Podešavanja
-          </span>
-        </Link>
-        <Link
-          className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/admin-panel/notifikacije")}`}
-          href="/admin-panel/notifikacije"
-        >
-          <Bell className="h-5 w-5" />
-          <span className="group-hover:block hidden transition-opacity delay-300 duration-500">
-            Notifikacije
-          </span>
-        </Link>
         <Link
           prefetch={true}
           className={`flex w-full items-center gap-4 rounded-md px-4 py-2 transition-colors ${isActive("/admin-panel/users")}`}

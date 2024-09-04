@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useGetAllOrders } from "@/lib/hooks/order/useFetchOrders";
 import OrderModal from "@/components/shared/OrderModal";
-import { Order } from "@prisma/client";
+import { Order, OrderStatus } from "@prisma/client";
 
 export default function ListOrders() {
   const { data: orders, isLoading, isError } = useGetAllOrders();
@@ -37,7 +37,7 @@ export default function ListOrders() {
   return (
     <section className="flex flex-col gap-6 mt-6 flex-1 overflow-y-auto p-4 w-full">
       <h2 className="text-2xl font-bold mb-4 dark:text-white">Orders</h2>
-      <div className="bg-white dark:bg-gray-900 rounded-lg shadow overflow-x-auto">
+      <div className="bg-white dark:bg-gray-900 rounded-lg shadow">
         <div className="flex flex-col md:flex-row items-center justify-between bg-gray-200 dark:bg-gray-700 p-4">
           <div className="w-full md:w-auto mb-4 md:mb-0">
             <label htmlFor="search" className="sr-only">
@@ -61,75 +61,82 @@ export default function ListOrders() {
             </button>
           </div>
         </div>
-        <table className="w-full">
-          <thead>
-            <tr className="bg-gray-200 dark:bg-gray-700">
-              <th className="py-3 px-4 text-left dark:text-gray-400">
-                Order #
-              </th>
-              <th className="py-3 px-4 text-left dark:text-gray-400">
-                Customer
-              </th>
-              <th className="py-3 px-4 text-left dark:text-gray-400">Total</th>
-              <th className="py-3 px-4 text-left dark:text-gray-400">Status</th>
-              <th className="py-3 px-4 text-left dark:text-gray-400">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredOrders.map((order: any) => (
-              <tr key={order.id} className="border-b dark:border-gray-700">
-                <td className="py-3 px-4 dark:text-gray-400">{order.id}</td>
-                <td className="py-3 px-4 dark:text-gray-400">
-                  {order.orderedBy}
-                </td>
-                <td className="py-3 px-4 dark:text-gray-400">
-                  {order.orderedProducts?.reduce(
-                    (total: any, orderedProduct: any) => {
-                      const productPrice = orderedProduct.product?.price ?? 0;
-                      const quantity = orderedProduct.quantity ?? 1;
-                      return total + productPrice * quantity;
-                    },
-                    0,
-                  ) || 0}
-                </td>
-                <td className="py-3 px-4 dark:text-gray-400">
-                  <span
-                    className={`px-2 py-1 rounded-full ${
-                      order.status === "Completed"
-                        ? "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100"
-                        : order.status === "Pending"
-                          ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100"
-                          : order.status === "Canceled"
-                            ? "bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100"
-                            : order.status === "Accepted"
-                              ? "bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100"
-                              : order.status === "Ordered"
-                                ? "bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100"
-                                : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100"
-                    }`}
-                  >
-                    {order.status}
-                  </span>
-                </td>
-                <td className="py-3 px-4 dark:text-gray-400">
-                  <div className="flex space-x-2">
-                    <button
-                      className="text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-500"
-                      onClick={() => handleViewOrder(order)}
-                    >
-                      View
-                    </button>
-                    <button className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500">
-                      Cancel
-                    </button>
-                  </div>
-                </td>
+        {/* Wrapper with a specific max-height to make the table scrollable */}
+        <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
+          <table className="w-full">
+            <thead className="sticky top-0 bg-gray-200 dark:bg-gray-700 z-10">
+              <tr>
+                <th className="py-3 px-4 text-left dark:text-gray-400">
+                  Porudzbina #
+                </th>
+                <th className="py-3 px-4 text-left dark:text-gray-400">
+                  Poručio
+                </th>
+                <th className="py-3 px-4 text-left dark:text-gray-400">
+                  Ukupno
+                </th>
+                <th className="py-3 px-4 text-left dark:text-gray-400">
+                  Status
+                </th>
+                <th className="py-3 px-4 text-left dark:text-gray-400">
+                  Izmena
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredOrders.map((order: any) => (
+                <tr key={order.id} className="border-b dark:border-gray-700">
+                  <td className="py-3 px-4 dark:text-gray-400">{order.id}</td>
+                  <td className="py-3 px-4 dark:text-gray-400">
+                    {order.orderedBy}
+                  </td>
+                  <td className="py-3 px-4 dark:text-gray-400">
+                    {order.orderedProducts?.reduce(
+                      (total: any, orderedProduct: any) => {
+                        const productPrice = orderedProduct.product?.price ?? 0;
+                        const quantity = orderedProduct.quantity ?? 1;
+                        return total + productPrice * quantity;
+                      },
+                      0,
+                    ) || 0}
+                  </td>
+                  <td className="py-3 px-4 dark:text-gray-400">
+                    <span
+                      className={`px-2 py-1 rounded-full ${
+                        order.status === OrderStatus.Completed
+                          ? "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100"
+                          : order.status === OrderStatus.Pending
+                            ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100"
+                            : order.status === OrderStatus.Canceled
+                              ? "bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100"
+                              : order.status === OrderStatus.Accepted
+                                ? "bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100"
+                                : order.status === OrderStatus.Ordered
+                                  ? "bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100"
+                                  : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100"
+                      }`}
+                    >
+                      {order.status}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 dark:text-gray-400">
+                    <div className="flex space-x-6">
+                      <button
+                        className="text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-500 font-bold"
+                        onClick={() => handleViewOrder(order)}
+                      >
+                        Vidi Porudzbinu
+                      </button>
+                      <button className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500 font-bold">
+                        Otkaži
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
       <OrderModal
         isOpen={isModalOpen}
