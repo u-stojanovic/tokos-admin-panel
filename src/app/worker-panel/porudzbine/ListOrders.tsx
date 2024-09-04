@@ -6,6 +6,7 @@ import { Order } from "@/lib";
 import OrderModal from "@/components/shared/OrderModal";
 import { OrderStatus } from "@prisma/client";
 import { SearchIcon } from "lucide-react";
+import { SkeletonLoader } from "./SkeletonLoader";
 
 export default function ListOrders() {
   const {
@@ -39,9 +40,7 @@ export default function ListOrders() {
     (order) => order.status === (OrderStatus.Accepted as any),
   );
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  if (isLoading) return <SkeletonLoader />;
 
   if (isError) {
     return <div>Failed to load orders.</div>;

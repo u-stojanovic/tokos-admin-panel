@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useGetAllOrders } from "@/lib/hooks/order/useFetchOrders";
 import OrderModal from "@/components/shared/OrderModal";
 import { Order, OrderStatus } from "@prisma/client";
+import { SkeletonLoader } from "./SekeltonLoader";
 
 export default function ListOrders() {
   const { data: orders, isLoading, isError } = useGetAllOrders();
@@ -26,9 +27,7 @@ export default function ListOrders() {
     setIsModalOpen(true);
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  if (isLoading) return <SkeletonLoader />;
 
   if (isError) {
     return <div>Failed to load orders.</div>;
