@@ -5,6 +5,7 @@ import { useGetAllOrderedAndAcceptedOrders } from "@/lib/hooks/order/useFetchOrd
 import { Order } from "@/lib";
 import OrderModal from "@/components/shared/OrderModal";
 import { OrderStatus } from "@prisma/client";
+import { SearchIcon } from "lucide-react";
 
 export default function ListOrders() {
   const {
@@ -31,6 +32,13 @@ export default function ListOrders() {
     setIsModalOpen(true);
   };
 
+  const orderedOrders = filteredOrders.filter(
+    (order) => order.status === OrderStatus.Ordered,
+  );
+  const acceptedOrders = filteredOrders.filter(
+    (order) => order.status === (OrderStatus.Accepted as any),
+  );
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -42,97 +50,146 @@ export default function ListOrders() {
   return (
     <section className="flex flex-col gap-6 mt-6 flex-1 overflow-y-auto p-4 w-full">
       <h2 className="text-2xl font-bold mb-4 dark:text-white">Orders</h2>
-      <div className="bg-white dark:bg-gray-900 rounded-lg shadow overflow-x-auto">
-        <div className="flex flex-col md:flex-row items-center justify-between bg-gray-200 dark:bg-gray-700 p-4">
-          <div className="w-full md:w-auto mb-4 md:mb-0">
-            <label htmlFor="search" className="sr-only">
-              Search
-            </label>
-            <input
-              type="text"
-              id="search"
-              placeholder="Search orders..."
-              className="w-full bg-gray-100 dark:bg-gray-800 rounded-md px-4 py-2 text-gray-500 dark:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <div className="flex space-x-2 w-full md:w-auto">
-            <button className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-md dark:bg-indigo-400 dark:hover:bg-indigo-500 w-full md:w-auto">
-              Filter
-            </button>
-            <button className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-400 w-full md:w-auto">
-              Export
-            </button>
-          </div>
+      <div className="relative w-full mb-4">
+        <label className="sr-only">Search</label>
+
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <SearchIcon />
         </div>
-        <table className="w-full">
-          <thead>
-            <tr className="bg-gray-200 dark:bg-gray-700">
-              <th className="py-3 px-4 text-left dark:text-gray-400">
-                Order #
-              </th>
-              <th className="py-3 px-4 text-left dark:text-gray-400">
-                Customer
-              </th>
-              <th className="py-3 px-4 text-left dark:text-gray-400">Total</th>
-              <th className="py-3 px-4 text-left dark:text-gray-400">Status</th>
-              <th className="py-3 px-4 text-left dark:text-gray-400">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredOrders.map((order) => (
-              <tr key={order.id} className="border-b dark:border-gray-700">
-                <td className="py-3 px-4 dark:text-gray-400">{order.id}</td>
-                <td className="py-3 px-4 dark:text-gray-400">
-                  {order.orderedBy}
-                </td>
-                <td className="py-3 px-4 dark:text-gray-400">
-                  {order.orderedProducts?.reduce((total, orderedProduct) => {
-                    const productPrice = orderedProduct.product?.price ?? 0;
-                    const quantity = orderedProduct.quantity ?? 1;
-                    return total + productPrice * quantity;
-                  }, 0) || 0}
-                </td>
-                <td className="py-3 px-4 dark:text-gray-400">
-                  <span
-                    className={`px-2 py-1 rounded-full ${
-                      order.status === "Completed"
-                        ? "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100"
-                        : order.status === "Pending"
-                          ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100"
-                          : order.status === "Canceled"
-                            ? "bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100"
-                            : order.status === (OrderStatus.Accepted as any)
-                              ? "bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100"
-                              : order.status === "Ordered"
-                                ? "bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100"
-                                : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100"
-                    }`}
-                  >
-                    {order.status}
-                  </span>
-                </td>
-                <td className="py-3 px-4 dark:text-gray-400">
-                  <div className="flex space-x-2">
-                    <button
-                      className="text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-500"
-                      onClick={() => handleViewOrder(order)}
-                    >
-                      View
-                    </button>
-                    <button className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500">
-                      Cancel
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <input
+          type="text"
+          id="search"
+          placeholder="Search orders..."
+          className="w-1/2 bg-white dark:bg-gray-800 rounded-md pl-10 pr-4 py-2 text-gray-500 dark:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
       </div>
+
+      {/* Orders with status "Ordered" */}
+      <div className="bg-white dark:bg-gray-900 rounded-lg shadow">
+        <h3 className="flex justify-center text-lg text-purple-600 font-semibold p-2 dark:text-white">
+          Primljene Porudzbine
+        </h3>
+        <div className="max-h-[50vh] overflow-y-auto">
+          <table className="w-full">
+            <thead className="sticky top-0 bg-gray-200 dark:bg-gray-700 z-10">
+              <tr>
+                <th className="py-3 px-4 text-left dark:text-gray-400">
+                  Porudzbina #
+                </th>
+                <th className="py-3 px-4 text-left dark:text-gray-400">
+                  Poručio
+                </th>
+                <th className="py-3 px-4 text-left dark:text-gray-400">
+                  Ukupno
+                </th>
+                <th className="py-3 px-4 text-left dark:text-gray-400">
+                  Status
+                </th>
+                <th className="py-3 px-4 text-left dark:text-gray-400">
+                  Izmena
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {orderedOrders.map((order) => (
+                <tr key={order.id} className="border-b dark:border-gray-700">
+                  <td className="py-3 px-4 dark:text-gray-400">{order.id}</td>
+                  <td className="py-3 px-4 dark:text-gray-400">
+                    {order.orderedBy}
+                  </td>
+                  <td className="py-3 px-4 dark:text-gray-400">
+                    {order.orderedProducts?.reduce((total, orderedProduct) => {
+                      const productPrice = orderedProduct.product?.price ?? 0;
+                      const quantity = orderedProduct.quantity ?? 1;
+                      return total + productPrice * quantity;
+                    }, 0) || 0}
+                  </td>
+                  <td className="py-3 px-4 dark:text-gray-400">
+                    <span className="px-2 py-1 rounded-full bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100">
+                      {order.status}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 dark:text-gray-400">
+                    <div className="flex space-x-2">
+                      <button
+                        className="text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-500 font-semibold"
+                        onClick={() => handleViewOrder(order)}
+                      >
+                        Vidi porudzbinu
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Orders with status "Accepted" */}
+      <div className="bg-white dark:bg-gray-900 rounded-lg shadow mt-6">
+        <h3 className="flex justify-center text-lg text-blue-600 font-semibold p-2 dark:text-white">
+          Prihvaćene Porudzbine
+        </h3>
+        <div className="max-h-[50vh] overflow-y-auto">
+          <table className="w-full">
+            <thead className="sticky top-0 bg-gray-200 dark:bg-gray-700 z-10">
+              <tr>
+                <th className="py-3 px-4 text-left dark:text-gray-400">
+                  Porudzbina #
+                </th>
+                <th className="py-3 px-4 text-left dark:text-gray-400">
+                  Poručio
+                </th>
+                <th className="py-3 px-4 text-left dark:text-gray-400">
+                  Ukupno
+                </th>
+                <th className="py-3 px-4 text-left dark:text-gray-400">
+                  Status
+                </th>
+                <th className="py-3 px-4 text-left dark:text-gray-400">
+                  Izmena
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {acceptedOrders.map((order) => (
+                <tr key={order.id} className="border-b dark:border-gray-700">
+                  <td className="py-3 px-4 dark:text-gray-400">{order.id}</td>
+                  <td className="py-3 px-4 dark:text-gray-400">
+                    {order.orderedBy}
+                  </td>
+                  <td className="py-3 px-4 dark:text-gray-400">
+                    {order.orderedProducts?.reduce((total, orderedProduct) => {
+                      const productPrice = orderedProduct.product?.price ?? 0;
+                      const quantity = orderedProduct.quantity ?? 1;
+                      return total + productPrice * quantity;
+                    }, 0) || 0}
+                  </td>
+                  <td className="py-3 px-4 dark:text-gray-400">
+                    <span className="px-2 py-1 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100">
+                      {order.status}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 dark:text-gray-400">
+                    <div className="flex space-x-2">
+                      <button
+                        className="text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-500 font-bold"
+                        onClick={() => handleViewOrder(order)}
+                      >
+                        Vidi Porudzbinu
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <OrderModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

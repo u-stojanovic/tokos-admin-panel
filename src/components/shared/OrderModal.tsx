@@ -1,18 +1,19 @@
-import React from "react";
-import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import {
   Table,
-  TableHeader,
-  TableRow,
-  TableHead,
   TableBody,
   TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { Order } from "@/lib";
 import { useAcceptOrderMutation } from "@/lib/hooks/order/useAcceptOrder";
+import { useCompleteOrderMutation } from "@/lib/hooks/order/useCompleteOrder";
+import { OrderStatus } from "@prisma/client";
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -25,15 +26,29 @@ export default function OrderModal({
   onClose,
   order,
 }: OrderModalProps) {
-  const mutation = useAcceptOrderMutation();
+  const acceptOrderMutation = useAcceptOrderMutation({
+    onSuccess: () => {
+      onClose();
+    },
+  });
+
+  const completeOrderMutation = useCompleteOrderMutation({
+    onSuccess: () => {
+      onClose();
+    },
+  });
 
   const handleAcceptOrder = () => {
     if (order) {
-      mutation.mutate(order as any);
-      onClose();
+      acceptOrderMutation.mutate(order as any);
     }
   };
 
+  const handleCompletedOrder = () => {
+    if (order) {
+      completeOrderMutation.mutate(order as any);
+    }
+  };
   if (!isOpen || !order) return null;
 
   const isDeliveryInformationEmpty =
@@ -137,13 +152,28 @@ export default function OrderModal({
           </div>
         </div>
         <DialogFooter>
-          <Button
-            className="ml-auto bg-green-500 hover:bg-green-600"
-            onClick={handleAcceptOrder}
-            disabled={mutation.isPending}
-          >
-            {mutation.isPending ? "Prihvatanje..." : "Prihvati porudžbinu"}
-          </Button>
+          {order.status == OrderStatus.Ordered && (
+            <Button
+              className="ml-auto bg-purple-500 hover:bg-purple-600"
+              onClick={handleAcceptOrder}
+              disabled={acceptOrderMutation.isPending}
+            >
+              {acceptOrderMutation.isPending
+                ? "Prihvatanje..."
+                : "Prihvati porudžbinu"}
+            </Button>
+          )}
+          {order.status == (OrderStatus.Accepted as any) && (
+            <Button
+              className="ml-auto bg-green-500 hover:bg-green-600"
+              onClick={handleCompletedOrder}
+              disabled={completeOrderMutation.isPending}
+            >
+              {completeOrderMutation.isPending
+                ? "Predavanje porudzbine..."
+                : "Predaj porudzbinu"}
+            </Button>
+          )}
           <Button type="button" onClick={onClose}>
             Zatvori
           </Button>

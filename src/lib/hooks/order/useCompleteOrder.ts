@@ -1,21 +1,21 @@
 import { useToast } from "@/components/ui/use-toast";
-import { acceptOrder } from "@/lib/actions/orderActions";
+import { completeOrder } from "@/lib/actions/orderActions";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export const useAcceptOrderMutation = (options = {} as any) => {
+export const useCompleteOrderMutation = (options = {} as any) => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: (order) => acceptOrder(order),
+    mutationFn: (order) => completeOrder(order),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["orders"],
         refetchType: "all",
       });
       toast({
-        title: "Order Accepted",
-        description: "Order Successfully Accepted",
+        title: "Order Completed",
+        description: "Order Successfully Completed",
       });
       if (options.onSuccess) {
         options.onSuccess();
@@ -24,7 +24,7 @@ export const useAcceptOrderMutation = (options = {} as any) => {
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: "Failed to accept order",
+        description: "Failed to complete order",
       });
       console.log("error: ", error);
     },

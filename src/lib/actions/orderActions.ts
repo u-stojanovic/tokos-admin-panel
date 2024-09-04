@@ -141,3 +141,115 @@ export async function acceptOrder(order: any) {
     console.log("error: ", error);
   }
 }
+
+export async function completeOrder(order: any) {
+  try {
+    const { user } = await getUserAndRole();
+
+    if (!user) {
+      throw new Error("User not logged in");
+    }
+
+    const foundUser = await prisma.user.findUnique({
+      where: {
+        id: user?.id,
+      },
+    });
+
+    if (!foundUser) {
+      throw new Error("User not found in user");
+    }
+
+    const foundOrder = await prisma.order.findUnique({
+      where: {
+        id: order.id,
+      },
+    });
+
+    if (!foundOrder) {
+      throw new Error("Order not found");
+    }
+
+    await prisma.order.update({
+      where: {
+        id: foundOrder.id,
+      },
+      data: {
+        status: OrderStatus.Completed,
+        userId: user.id,
+      },
+    });
+  } catch (error) {
+    console.log("error: ", error);
+  }
+}
+
+export async function getHistoryOrdersAdmin() {
+  try {
+    const foundOrders = await prisma.order.findMany({
+      where: {
+        status: OrderStatus.Completed,
+      },
+      include: {
+        orderedProducts: {
+          include: {
+            product: true,
+          },
+        },
+        completedBy: true,
+      },
+    });
+
+    if (!foundOrders) {
+      return [];
+    }
+
+    return foundOrders;
+  } catch (error) {
+    console.log("error: ", error);
+    return [];
+  }
+}
+
+export async function getCompletedOrdersForUserHistory() {
+  try {
+    const { user } = await getUserAndRole();
+
+    if (!user) {
+      throw new Error("User not logged in");
+    }
+
+    const foundUser = await prisma.user.findUnique({
+      where: {
+        id: user?.id,
+      },
+    });
+
+    if (!foundUser) {
+      throw new Error("User not found in user");
+    }
+
+    const foundOrders = await prisma.order.findMany({
+      where: {
+        userId: foundUser.id,
+        status: OrderStatus.Completed,
+      },
+      include: {
+        orderedProducts: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+
+    if (!foundOrders) {
+      return [];
+    }
+
+    return foundOrders;
+  } catch (error) {
+    console.log("error");
+    return [];
+  }
+}
