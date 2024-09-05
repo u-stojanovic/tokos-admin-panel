@@ -10,12 +10,16 @@ export const useCompleteOrderMutation = (options = {} as any) => {
     mutationFn: (order) => completeOrder(order),
     onSuccess: () => {
       queryClient.invalidateQueries({
+        queryKey: ["getCompletedOrdersForUserHistory"],
+        refetchType: "all",
+      });
+      queryClient.invalidateQueries({
         queryKey: ["orders"],
         refetchType: "all",
       });
       toast({
-        title: "Order Completed",
-        description: "Order Successfully Completed",
+        title: "Porudzbina je predata",
+        description: "Porudzbina je uspešno predata",
       });
       if (options.onSuccess) {
         options.onSuccess();
