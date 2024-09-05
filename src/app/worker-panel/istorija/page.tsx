@@ -16,7 +16,6 @@ import { OrderStatus } from "@prisma/client";
 export default function Istorija() {
   const { data: orders, isLoading, isError } = useGetUsersOrderHistory();
 
-  // Handle loading and error states
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading order history</div>;
 
@@ -25,7 +24,6 @@ export default function Istorija() {
       <h1 className="text-2xl font-bold mb-4">Istorija Izvršenih Porudžbina</h1>
       <Separator />
 
-      {/* If there are no completed orders */}
       {orders && orders.length === 0 ? (
         <div className="text-muted-foreground mt-4">
           Nema završenih porudžbina.
